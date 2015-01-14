@@ -9,9 +9,10 @@ SS_SITE = "serversquared.noip.me"
 
 --[[ ################################################################
 Copyright (C) server - All Rights Reserved.
-Unauthorized copying of this file, via any medium, is strictly prohibited.
-This is closed-source, non-free software.
-Proprietary and confidential.
+This work is licensed under the Creative
+Commons Attribution-NoDerivatives 4.0 International
+License. To view a copy of this license,
+visit http://creativecommons.org/licenses/by-nd/4.0/.
 Written by server <serversquaredmain@gmail.com>, January 2015.
      ################################################################   ]]
 
