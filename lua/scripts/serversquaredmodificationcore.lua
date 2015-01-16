@@ -182,7 +182,7 @@ function onPlayerSayText(CN, text, isTeam, isMe)
 	local command, args = array[1], slice(array, 2)
 	-- Check if the text is a command, execute if it is.
 	if commands[command] ~= nil then
-		local params, callback = commands[command][1], commands[command][2]
+		local callback = commands[command][1]
 		callback(CN, args)
 		return PLUGIN_BLOCK
 	elseif string.byte(command,1) == string.byte("!",1) then
@@ -197,6 +197,7 @@ end
 
 -- Chat printing
 function printChat(text, CN, chatPrefix, isTeam, isMe)
+	print("[" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: " .. text)
 	if isTeam then
 		for x=0,maxclient(),1 do
 			if getteam(CN) == getteam(x) and CN ~= x then
