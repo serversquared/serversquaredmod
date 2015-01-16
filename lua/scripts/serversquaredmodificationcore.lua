@@ -214,9 +214,9 @@ commands = {
 	function (CN, args)
 		local loadStartTick = getsvtick()
 		if unix then
-			dofile("lua/scripts/SSModules/" .. args[1])
+			dofile("lua/scripts/SSModules/" .. args[1] .. ".ssm")
 		else
-			dofile("lua\\scripts\\SSModules\\" .. args[1])
+			dofile("lua\\scripts\\SSModules\\" .. args[1] .. ".ssm")
 		end
 		local loadTime = (getsvtick() - loadStartTick)
 		local loadStartTick = nil
