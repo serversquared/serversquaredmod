@@ -104,6 +104,7 @@ textEcho = false				-- Global echo back coloured text.
 colouredText = true				-- Allow or disallow coloured chat.
 useAdminSystem = false			-- Use an external Administration system.
 useMuteSystem = false			-- Use an external player muting system.
+useChatFilter = false			-- Use an external chat filter system.
 -- Initialize our tables.
 loadedModules = {}				-- Table of Modules that we've loaded.
 serverColour = {				-- Table of colours for the server.
@@ -161,12 +162,14 @@ function onPlayerSayText(CN, text, isTeam, isMe)
 		end
 	end
 	
-	-- -- Test for profanity, if list is present.
-	-- if not chatIsClean(text) then
-		-- blockChatReason = "Chat contains profanity."
-		-- blockChat(CN, text, isTeam, isMe, blockChatReason)
-		-- return PLUGIN_BLOCK
-	-- end
+	-- Test for profanity if using a filter system.
+	if useChatFilter then
+		if not chatIsClean(text) then
+			blockChatReason = "Chat contains profanity."
+			blockChat(CN, text, isTeam, isMe, blockChatReason)
+			return PLUGIN_BLOCK
+		end
+	end
 	
 	-- Convert colour codes if enabled on our server.
 	if colouredText then
