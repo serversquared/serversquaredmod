@@ -195,8 +195,6 @@ function onPlayerSayText(CN, text, isTeam, isMe)
 	
 end
 
-commands = {}
-
 -- Chat printing
 function printChat(text, CN, chatPrefix, isTeam, isMe)
 	if isTeam then
@@ -209,3 +207,20 @@ function printChat(text, CN, chatPrefix, isTeam, isMe)
 		say(serverColour[1] .. CN .. "\f3" .. chatPrefix .. serverColour[2] .. "#" .. (isMe and serverColour[3] or "\f5") .. getname(CN) .. serverColour[3] .. (isMe and space or ": ") .. text, -1, (textEcho and -1 or CN))
 	end
 end
+
+-- Core Commands
+commands = {
+	["!loadPlugin"] = {
+	function (CN, args)
+		local loadStartTick = getsvtick()
+		if unix then
+			dofile("lua/scripts/SSModules/" .. args[1])
+		else
+			dofile("lua\\scripts\\SSModules\\" .. args[1])
+		end
+		local loadTime = (getsvtick() - loadStartTick)
+		local loadStartTick = nil
+		say("Done in " .. loadTime .. "ms")
+	end
+	}
+}
