@@ -133,6 +133,26 @@ function say(text, toCN, excludeCN)
 	clientprint(toCN, text, excludeCN)
 end
 
+-- Run a Module.
+function runModule(moduleName)
+	local loadStartTick = getsvtick()
+	if unix then
+		if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
+			local loadTime = (getsvtick() - loadStartTick)
+			print("Done in " .. loadTime .. "ms.")
+		else
+			print("Error loading Module.")
+		end
+	else
+		if pcall(dofile, "lua\\scripts\\SSModules\\" .. moduleName .. ".ssm") then
+			local loadTime = (getsvtick() - loadStartTick)
+			print("Done in " .. loadTime .. "ms.")
+		else
+			print("Error loading Module.")
+		end
+	end
+end
+
 -- Chat decoding and processing. Chat and commands will probably break if this is changed.
 function onPlayerSayText(CN, text, isTeam, isMe)
 	-- Initialize chatPrefix.
@@ -217,21 +237,13 @@ commands = {
 	["!loadModule"] = {
 	function (CN, args)
 		print("Loading module: " .. args[1])
-		if args[2] == "remove" or "unload" then 
+		if args[2] ~= nil and  ("remove" or "unload") then 
 			unloadModule = true
 			print("Loading module in unload mode.")
 		else
 			unloadModule = false
 		end
-		local loadStartTick = getsvtick()
-		if unix then
-			dofile("lua/scripts/SSModules/" .. args[1] .. ".ssm")
-		else
-			dofile("lua\\scripts\\SSModules\\" .. args[1] .. ".ssm")
-		end
-		local loadTime = (getsvtick() - loadStartTick)
-		local loadStartTick = nil
-		print("Done in " .. loadTime .. "ms.")
+		runModule(args[1])
 		unloadModule = nil
 	end
 	}
