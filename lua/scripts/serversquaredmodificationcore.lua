@@ -3,7 +3,7 @@ PLUGIN_AUTHOR = "server"
 PLUGIN_VERSION = "9.0.0" -- In development!
 ALPHA = true
 BETA = false
-BUILD_DATE = "13 January 2015"
+BUILD_DATE = "16 January 2015"
 COPYRIGHT_REGISTRATION_YEAR = "2015"
 SS_SITE = "serversquared.noip.me"
 
