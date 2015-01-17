@@ -94,13 +94,15 @@ colouredText = true				-- Allow or disallow coloured chat.
 useAdminSystem = false			-- Use an external Administration system.
 useMuteSystem = false			-- Use an external player muting system.
 useChatFilter = false			-- Use an external chat filter system.
+debugMode = false				-- Turn on or off debug (verbose) mode. This WILL write to the log.
+logWarn = true					-- Turn on or off logging warn messages (and lower).
 -- Initialize our tables.
 loadedModules = {}				-- Table of Modules that we've loaded.
 serverColour = {				-- Table of colours for the server.
 "\f4",							-- Primary colour.
 "\f3",							-- Secondary colour.
 "\f0",							-- Public chat colour.
-"\f1",							-- Team chat colour.
+"\f1"							-- Team chat colour.
 }
 
 -- Core functions.
