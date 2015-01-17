@@ -35,12 +35,6 @@ if ALPHA or BETA then io.write("\n********************\n/!\\ WARNING /!\\\nTHIS 
 io.write("\nPlease report any bugs immediately!")
 io.write("\nLet's configure your server.")
 io.write("\n============================================================")
--- Determine if we're running on a UNIX-based system
-if package.config:sub(1,1) == "/" then
-	unix = true
-else
-	unix = false -- Ew.
-end
 -- Get current working directory
 ACPath = os.currentdir()
 -- Should we load a configuration file?
@@ -50,7 +44,7 @@ repeat
 	configAnswer = io.read()
 	if configAnswer == "n" then
 		loadFromConfig = false
-	elseif configAnswer == blank or "y" then
+	elseif configAnswer == (blank or "y") then
 		loadFromConfig = true
 	end
 until loadFromConfig ~= nil
@@ -129,20 +123,25 @@ end
 -- Run a Module.
 function runModule(moduleName)
 	local loadStartTick = getsvtick()
-	if unix then
-		if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
-			local loadTime = (getsvtick() - loadStartTick)
-			print("Done in " .. loadTime .. "ms.")
-		else
-			print("Error loading Module.")
+	if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
+		local loadTime = (getsvtick() - loadStartTick)
+		print("Done in " .. loadTime .. "ms.")
+	else
+		print("Error loading Module.")
+		end
+end
+
+-- Chat printing
+function printChat(text, CN, chatPrefix, isTeam, isMe)
+	print("[" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"")
+	if isTeam then
+		for x=0,maxclient(),1 do
+			if getteam(CN) == getteam(x) and CN ~= x then
+				say(serverColour[1] .. CN .. "\f3" .. chatPrefix .. serverColour[2] .. "#" .. (isMe and serverColour[4] or "\f5") .. getname(CN) .. serverColour[4] .. (isMe and space or ": ") .. text, x, (textEcho and -1 or CN))
+			end
 		end
 	else
-		if pcall(dofile, "lua\\scripts\\SSModules\\" .. moduleName .. ".ssm") then
-			local loadTime = (getsvtick() - loadStartTick)
-			print("Done in " .. loadTime .. "ms.")
-		else
-			print("Error loading Module.")
-		end
+		say(serverColour[1] .. CN .. "\f3" .. chatPrefix .. serverColour[2] .. "#" .. (isMe and serverColour[3] or "\f5") .. getname(CN) .. serverColour[3] .. (isMe and space or ": ") .. text, -1, (textEcho and -1 or CN))
 	end
 end
 
@@ -209,21 +208,6 @@ function onPlayerSayText(CN, text, isTeam, isMe)
 	-- Chat function
 	printChat(text, CN, chatPrefix, isTeam, isMe)
 	return PLUGIN_BLOCK
-	
-end
-
--- Chat printing
-function printChat(text, CN, chatPrefix, isTeam, isMe)
-	print("[" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"")
-	if isTeam then
-		for x=0,maxclient(),1 do
-			if getteam(CN) == getteam(x) and CN ~= x then
-				say(serverColour[1] .. CN .. "\f3" .. chatPrefix .. serverColour[2] .. "#" .. (isMe and serverColour[4] or "\f5") .. getname(CN) .. serverColour[4] .. (isMe and space or ": ") .. text, x, (textEcho and -1 or CN))
-			end
-		end
-	else
-		say(serverColour[1] .. CN .. "\f3" .. chatPrefix .. serverColour[2] .. "#" .. (isMe and serverColour[3] or "\f5") .. getname(CN) .. serverColour[3] .. (isMe and space or ": ") .. text, -1, (textEcho and -1 or CN))
-	end
 end
 
 -- Core Commands
