@@ -89,7 +89,6 @@ io.write("\nThank you for using (server)^2 Modification!")
 io.write("\nThe modification will now continue to load.\n")
 
 -- Load our variables.
-restartMessage = false			-- Notify if the server was restarted.
 textEcho = false				-- Global echo back coloured text.
 colouredText = true				-- Allow or disallow coloured chat.
 useAdminSystem = false			-- Use an external Administration system.
