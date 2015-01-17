@@ -153,7 +153,7 @@ function runModule(moduleName)
 	end
 end
 
--- Chat decoding and processing. Chat and commands will probably break if this is changed.
+-- Chat decoding and processing. Chat and commands will probably break if this is changed by a Module, unless they know what they're doing.
 function onPlayerSayText(CN, text, isTeam, isMe)
 	-- Initialize chatPrefix.
 	chatPrefix = blank
@@ -209,6 +209,7 @@ function onPlayerSayText(CN, text, isTeam, isMe)
 		callback(CN, args)
 		return PLUGIN_BLOCK
 	elseif string.byte(command,1) == string.byte("!",1) then
+		print("Not a command: \"" .. command .. "\"")
 		return PLUGIN_BLOCK		
 	end
 	
