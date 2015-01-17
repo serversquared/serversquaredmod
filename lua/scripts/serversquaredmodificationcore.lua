@@ -26,6 +26,9 @@ include("ac_server")
 -- Load LuaSocket
 socket = require("socket")
 
+-- Load Lua-Ex
+require("ex")
+
 -- Present a friendly message for the server configuration interface.
 io.write("\nWelcome to (server)^2 Modification version " .. PLUGIN_VERSION .. "!")
 if ALPHA or BETA then io.write("\n********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************") end
@@ -39,17 +42,7 @@ else
 	unix = false -- Ew.
 end
 -- Get current working directory
-if unix then
-	local handle = io.popen("pwd")
-	ACPath = handle:read("*a")
-	handle:close()
-	ACPath = string.gsub(ACPath, "\n", "")
-else
-	local handle = io.popen("cd")
-	ACPath = handle:read("*a")
-	handle:close()
-	ACPath = string.gsub(ACPath, "\n", "")
-end
+ACPath = os.currentdir()
 -- Should we load a configuration file?
 repeat
 	io.write("\nLoad from config file? Answer n if you don't have one. (y/n)")
