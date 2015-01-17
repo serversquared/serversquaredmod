@@ -44,7 +44,7 @@ repeat
 	configAnswer = io.read()
 	if configAnswer == "n" then
 		loadFromConfig = false
-	elseif configAnswer == (blank or "y") then
+	elseif configAnswer == blank or configAnswer == "y" then
 		loadFromConfig = true
 	end
 until loadFromConfig ~= nil
@@ -66,7 +66,7 @@ if not loadFromConfig then
 		configAnswer = io.read()
 		if configAnswer == "n" then
 			configCompleted = true
-		elseif configAnswer == blank or "y" then
+		elseif configAnswer == blank or configAnswer == "y" then
 			if not cfg.exists("serversquared.serverconfig") then
 				cfg.createfile("serversquared.serverconfig")
 			end
