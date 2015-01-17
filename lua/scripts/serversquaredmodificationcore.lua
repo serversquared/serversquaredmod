@@ -23,6 +23,9 @@ space = " "
 -- Include the AssaultCube server core.
 include("ac_server")
 
+-- Load LuaSocket
+socket = require("socket")
+
 -- Present a friendly message for the server configuration interface.
 io.write("\nWelcome to (server)^2 Modification version " .. PLUGIN_VERSION .. "!")
 if ALPHA or BETA then io.write("\n********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************") end
@@ -197,7 +200,7 @@ end
 
 -- Chat printing
 function printChat(text, CN, chatPrefix, isTeam, isMe)
-	print("[" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: " .. text)
+	print("[" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"")
 	if isTeam then
 		for x=0,maxclient(),1 do
 			if getteam(CN) == getteam(x) and CN ~= x then
@@ -211,8 +214,15 @@ end
 
 -- Core Commands
 commands = {
-	["!loadPlugin"] = {
+	["!loadModule"] = {
 	function (CN, args)
+		print("Loading module: " .. args[1])
+		if args[2] == "remove" or "unload" then 
+			unloadModule = true
+			print("Loading module in unload mode.")
+		else
+			unloadModule = false
+		end
 		local loadStartTick = getsvtick()
 		if unix then
 			dofile("lua/scripts/SSModules/" .. args[1] .. ".ssm")
@@ -221,7 +231,8 @@ commands = {
 		end
 		local loadTime = (getsvtick() - loadStartTick)
 		local loadStartTick = nil
-		say("Done in " .. loadTime .. "ms")
+		print("Done in " .. loadTime .. "ms.")
+		unloadModule = nil
 	end
 	}
 }
