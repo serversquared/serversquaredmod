@@ -127,6 +127,11 @@ function runModule(moduleName)
 	if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
 		local loadTime = (getsvtick() - loadStartTick)
 		print("Done in " .. loadTime .. "ms.")
+		if unloadModule then
+			loadedModules[moduleName] = nil
+		else
+			loadedModules[moduleName] = true
+		end
 	else
 		print("Error loading Module.")
 		end
