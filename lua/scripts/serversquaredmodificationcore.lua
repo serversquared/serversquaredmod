@@ -211,7 +211,7 @@ function onInit()
 				serverLog("Removed module from loadedModules table.", 0, "Server Core")
 			else
 				loadedModules[moduleName] = true
-				checkModule()
+				checkModule(moduleName, moduleConfig)
 				serverLog("Added Module to loadedModules table.", 0, "Server Core")
 			end
 			if booleanMode ~= nil and booleanMode then
@@ -227,13 +227,13 @@ function onInit()
 	end
 
 	-- Check if a Module is built for our API base version.
-	function checkModule()
+	function checkModule(moduleName, moduleConfig)
 		if moduleConfig ~= nil then
 			if moduleConfig.usesbaseAPI ~= nil and moduleConfig.usesbaseAPI < SSCore.baseversionAPI then
 				serverLog("Module " .. moduleName .. " is built for old API version " .. moduleConfig.usesAPI .. ". It may have compatibility issues.", 3, "Server Core")
 			end
 		else
-			serverLog("Module " .. moduleName .. " does not have a config. This may cause issues, especially if the API version used is outdated.", 3, "Server Core") 
+			serverLog("Module " .. moduleName .. " does not have a config. This may cause issues if the API version is outdated.", 3, "Server Core") 
 		end
 	end
 
