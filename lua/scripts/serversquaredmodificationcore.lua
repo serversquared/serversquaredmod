@@ -94,8 +94,9 @@ colouredText = true				-- Allow or disallow coloured chat.
 useAdminSystem = false			-- Use an external Administration system.
 useMuteSystem = false			-- Use an external player muting system.
 useChatFilter = false			-- Use an external chat filter system.
-debugMode = false				-- Turn on or off debug (verbose) mode. This WILL write to the log.
-logWarn = true					-- Turn on or off logging warn messages (and lower).
+debugMode = true				-- Turn on or off debug (verbose) mode. This WILL write to the log.
+logMod = true					-- Turn on or off mod logging.
+logInfo = true					-- Turn on or off logging "INFO" level messages.
 -- Initialize our tables.
 loadedModules = {}				-- Table of Modules that we've loaded.
 serverColour = {				-- Table of colours for the server.
@@ -119,6 +120,35 @@ function say(text, toCN, excludeCN)
 		text = blank
 	end
 	clientprint(toCN, text, excludeCN)
+end
+
+-- Write to the log.
+function serverLog(message, level, sender)
+	-- Do not continue if logging is off
+	if not logMod then
+		return
+	end
+	-- Log and print message, warn if incorrect syntax.
+	if level == 0  and message ~= nil and sender ~= nil and debugMode then
+		print("[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
+		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
+	elseif level == 1  and message ~= nil and sender ~= nil and debugMode then
+		print("[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
+		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
+	elseif level == 2  and message ~= nil and sender ~= nil and logInfo then
+		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/INFO]: " .. message)
+	elseif level == 3  and message ~= nil and sender ~= nil then
+		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/WARN]: " .. message)
+	elseif level == 4  and message ~= nil and sender ~= nil then
+		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/ERROR]: " .. message)
+	elseif level == 20  and message ~= nil and sender ~= nil then
+		logline(4, "[" .. os.date("%X") .. "] [" .. sender .. "/FATAL]: " .. message)
+	elseif level == 21  and message ~= nil and sender ~= nil then
+		logline(2, "[" .. os.date("%X") .. "] [" .. sender .. "/SHUTDOWN]: " .. message)
+	else
+		logline(3, "[" .. os.date("%X") .. "] [Server Core/WARN]: Log message from " .. sender .. " was sent in the incorrect syntax.")
+	end
+	
 end
 
 -- Run a Module.
@@ -230,5 +260,12 @@ commands = {
 		runModule(args[1])
 		unloadModule = nil
 	end
-	}
+	};
+	
+	["!stop"] = {
+	function (CN, args)
+		serverLog("Shutting down the server (Sent from player: " .. getname(CN) .. ")...", 21, "Server Core")
+		os.exit()
+	end
+	};
 }
