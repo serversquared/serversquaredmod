@@ -271,3 +271,7 @@ commands = {
 	end
 	};
 }
+
+function onDestroy()
+	serverLog("The server is being stopped gracefully.", 21, "Server Core")
+end
