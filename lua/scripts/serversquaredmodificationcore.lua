@@ -16,6 +16,14 @@ visit http://creativecommons.org/licenses/by-nd/4.0/.
 Written by server <serversquaredmain@gmail.com>, January 2015.
      ################################################################   ]]
 
+-- Table of this mod's info
+SSCore = {
+baseversionCore = 9,
+baseversionAPI = 1,
+versionCore = 9.0.0,
+versionAPI = 1.0
+}
+
 -- Logging control
 SSLog = {
 logMod = true,					-- Turn on or off mod logging.
@@ -339,9 +347,11 @@ function onDestroy()
 	serverLog("The server is being stopped gracefully.", 21, "Server Core")
 
 	-- Let all loaded Modules do anything they need to before the Core stops.
-	io.write("\nRunning Module shutdown scripts...\n")
+	serverLog("Running Module shutdown scripts.", 21, "Server Core")
 	for moduleName in pairs(loadedModules) do
+		serverLog("Unloading Module " .. moduleName, 21, "Server Core")
 		runModule(moduleName, true)
 	end
+
 	io.write("Thank you for using (server)^2 Modification.\n")
 end
