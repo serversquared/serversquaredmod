@@ -18,10 +18,10 @@ Written by server <serversquaredmain@gmail.com>, January 2015.
 
 -- Table of this mod's info
 SSCore = {
-baseversionCore = 9,
-baseversionAPI = 1,
-versionCore = 9.0.0,
-versionAPI = 1.0
+baseversionCore = "9",			-- Base version of the Core.
+baseversionAPI = "1",			-- Base version of the Core API. Modules should probably work if they were written for this base version.
+versionCore = "9.0.0",			-- Version of the Core.
+versionAPI = "1.0"				-- Version of the Core API. 
 }
 
 -- Logging control
@@ -211,12 +211,24 @@ function onInit()
 				serverLog("Removed module from loadedModules table.", 0, "Server Core")
 			else
 				loadedModules[moduleName] = true
+				checkModule()
 				serverLog("Added Module to loadedModules table.", 0, "Server Core")
 			end
 		else
 			serverLog("Error loading Module.", 2, "Server Core")
 		end
 		unloadModule = nil
+	end
+
+	-- Check if a Module is built for our API base version.
+	function checkModule()
+		if moduleConfig ~= nil then
+			if moduleConfig.usesbaseAPI ~= nil and moduleConfig.usesbaseAPI < SSCore.baseversionAPI then
+				serverLog("Module " .. moduleName .. " is built for old API version " .. moduleConfig.usesAPI .. ". It may have compatibility issues.", 3, "Server Core")
+			end
+		else
+			serverLog("Module " .. moduleName .. " does not have a config. This may cause issues, especially if the API version used is outdated.", 3, "Server Core") 
+		end
 	end
 
 	-- Chat printing
