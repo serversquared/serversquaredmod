@@ -213,9 +213,9 @@ function onInit()
 				loadedModules[moduleName] = true
 				checkModule()
 				serverLog("Added Module to loadedModules table.", 0, "Server Core")
-				if booleanMode ~= nil and booleanMode then
-					return true
-				end
+			end
+			if booleanMode ~= nil and booleanMode then
+				return true
 			end
 		else
 			serverLog("Error loading Module.", 4, "Server Core")
