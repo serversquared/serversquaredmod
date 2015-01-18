@@ -188,9 +188,12 @@ function onInit()
 	end
 
 	-- Run a Module.
-	function runModule(moduleName)
+	function runModule(moduleName, unloadModule)
 		serverLog("Starting runModule function.", 1, "Server Core")
 		local loadStartTick = getsvtick()
+		if unloadModule == nil or moduleName == nil then
+			serverLog("runModule was called using incorrect syntax, stopping.", 3, "Server Core")
+		end
 		serverLog("Loading Module" .. (unloadModule and " in unload mode" or blank) .. ": " .. moduleName, 2, "Server Core")
 		if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
 			local loadTime = (getsvtick() - loadStartTick)
@@ -204,7 +207,8 @@ function onInit()
 			end
 		else
 			serverLog("Error loading Module.", 2, "Server Core")
-			end
+		end
+		unloadModule = nil
 	end
 
 	-- Chat printing
@@ -319,8 +323,7 @@ commands = {
 			unloadModule = false
 		end
 		serverLog("Calling runModule to load the Module.", 0, "Server Core")
-		runModule(args[1])
-		unloadModule = nil
+		runModule(args[1], unloadModule)
 	end
 	};
 	
@@ -334,5 +337,11 @@ commands = {
 
 function onDestroy()
 	serverLog("The server is being stopped gracefully.", 21, "Server Core")
-	io.write("\nThank you for using (server)^2 Modification.\n")
+
+	-- Let all loaded Modules do anything they need to before the Core stops.
+	io.write("\nRunning Module shutdown scripts...\n")
+	for moduleName in pairs(loadedModules) do
+		runModule(moduleName, true)
+	end
+	io.write("Thank you for using (server)^2 Modification.\n")
 end
