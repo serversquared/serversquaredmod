@@ -349,7 +349,11 @@ commands = {
 			unloadModule = false
 		end
 		serverLog("Calling runModule to load the Module.", 0, "Server Core")
-		runModule(args[1], unloadModule)
+		if runModule(args[1], unloadModule, true) then
+			say("Module was loaded successfully.", CN)
+		else
+			say("Module failed to load.", CN)
+		end
 	end
 	};
 	
