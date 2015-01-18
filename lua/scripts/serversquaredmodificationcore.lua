@@ -208,7 +208,7 @@ function onInit()
 	-- Chat printing
 	function printChat(text, CN, chatPrefix, isTeam, isMe)
 		print("[" .. os.date("%X") .. "] [" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"")
-		serverLog("[" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"", 22, "CORE")
+		serverLog("[" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"", 22, "Server Core")
 		if isTeam then
 			for x=0,maxclient(),1 do
 				if getteam(CN) == getteam(x) and CN ~= x then
