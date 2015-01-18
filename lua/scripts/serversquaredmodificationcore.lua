@@ -218,7 +218,7 @@ function onInit()
 				end
 			end
 		else
-			serverLog("Error loading Module.", 2, "Server Core")
+			serverLog("Error loading Module.", 4, "Server Core")
 			if booleanMode ~= nil and booleanMode then
 				return false
 			end
