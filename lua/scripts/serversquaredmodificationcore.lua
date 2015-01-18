@@ -196,7 +196,7 @@ function onInit()
 	end
 
 	-- Run a Module.
-	function runModule(moduleName, unloadModule)
+	function runModule(moduleName, unloadModule, booleanMode)
 		serverLog("Starting runModule function.", 1, "Server Core")
 		local loadStartTick = getsvtick()
 		if unloadModule == nil or moduleName == nil then
@@ -213,9 +213,15 @@ function onInit()
 				loadedModules[moduleName] = true
 				checkModule()
 				serverLog("Added Module to loadedModules table.", 0, "Server Core")
+				if booleanMode ~= nil and booleanMode then
+					return true
+				end
 			end
 		else
 			serverLog("Error loading Module.", 2, "Server Core")
+			if booleanMode ~= nil and booleanMode then
+				return false
+			end
 		end
 		unloadModule = nil
 	end
