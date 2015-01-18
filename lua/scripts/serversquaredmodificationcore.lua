@@ -17,24 +17,26 @@ Written by server <serversquaredmain@gmail.com>, January 2015.
      ################################################################   ]]
 
 -- Logging control
-logMod = true					-- Turn on or off mod logging.
-debugMode = true				-- Turn on or off debug (verbose) mode. This WILL write to the log.
+SSLog = {
+logMod = true,					-- Turn on or off mod logging.
+debugMode = true,				-- Turn on or off debug (verbose) mode. This WILL write to the log.
 logInfo = true					-- Turn on or off logging "INFO" level messages.
+}
 
 -- Function to write the log.
 function serverLog(message, level, sender)
 	-- Do not continue if logging is off
-	if not logMod then
+	if not SSLog.logMod then
 		return
 	end
 	-- Log and print message, warn if incorrect syntax.
-	if level == 0  and message ~= nil and sender ~= nil and debugMode then
+	if level == 0  and message ~= nil and sender ~= nil and SSLog.debugMode then
 		print("[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
-	elseif level == 1  and message ~= nil and sender ~= nil and debugMode then
+	elseif level == 1  and message ~= nil and sender ~= nil and SSLog.debugMode then
 		print("[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
-	elseif level == 2  and message ~= nil and sender ~= nil and logInfo then
+	elseif level == 2  and message ~= nil and sender ~= nil and SSLog.logInfo then
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/INFO]: " .. message)
 	elseif level == 3  and message ~= nil and sender ~= nil then
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/WARN]: " .. message)
@@ -63,12 +65,16 @@ socket = require("socket")
 require("ex")
 
 function onInit()
+	serverLog("Initializing the Modification.", 2, "Server Core")
 	-- Load our variables.
-	textEcho = false				-- Global echo back coloured text.
-	colouredText = true				-- Allow or disallow coloured chat.
-	useAdminSystem = false			-- Use an external Administration system.
-	useMuteSystem = false			-- Use an external player muting system.
+	serverLog("Loading Global configuration variables.", 1, "Server Core")
+	SSConfig = {
+	textEcho = false,				-- Global echo back coloured text.
+	colouredText = true,			-- Allow or disallow coloured chat.
+	useAdminSystem = false,			-- Use an external Administration system.
+	useMuteSystem = false,			-- Use an external player muting system.
 	useChatFilter = false			-- Use an external chat filter system.
+	}
 	-- Initialize our tables.
 	loadedModules = {}				-- Table of Modules that we've loaded.
 	serverColour = {				-- Table of colours for the server.
@@ -81,7 +87,8 @@ function onInit()
 	-- Present a friendly message for the server configuration interface.
 	io.write("\nWelcome to (server)^2 Modification version " .. PLUGIN_VERSION .. "!")
 	if ALPHA or BETA then io.write("\n********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************") end
-	io.write("\nPlease report any bugs immediately!")
+	io.write("\nPlease report any bugs to the issue tracker at:")
+	io.write("\nhttps://github.com/account3r2/serversquaredmod/issues")
 	io.write("\nLet's configure your server.")
 	io.write("\n============================================================")
 	-- Get current working directory
@@ -174,11 +181,11 @@ function onInit()
 		if isTeam then
 			for x=0,maxclient(),1 do
 				if getteam(CN) == getteam(x) and CN ~= x then
-					say(serverColour[1] .. CN .. "\f3" .. chatPrefix .. serverColour[2] .. "#" .. (isMe and serverColour[4] or "\f5") .. getname(CN) .. serverColour[4] .. (isMe and space or ": ") .. text, x, (textEcho and -1 or CN))
+					say(serverColour[1] .. CN .. "\f3" .. chatPrefix .. serverColour[2] .. "#" .. (isMe and serverColour[4] or "\f5") .. getname(CN) .. serverColour[4] .. (isMe and space or ": ") .. text, x, (SSConfig.textEcho and -1 or CN))
 				end
 			end
 		else
-			say(serverColour[1] .. CN .. "\f3" .. chatPrefix .. serverColour[2] .. "#" .. (isMe and serverColour[3] or "\f5") .. getname(CN) .. serverColour[3] .. (isMe and space or ": ") .. text, -1, (textEcho and -1 or CN))
+			say(serverColour[1] .. CN .. "\f3" .. chatPrefix .. serverColour[2] .. "#" .. (isMe and serverColour[3] or "\f5") .. getname(CN) .. serverColour[3] .. (isMe and space or ": ") .. text, -1, (SSConfig.textEcho and -1 or CN))
 		end
 	end
 
@@ -193,7 +200,7 @@ function onInit()
 		end
 		
 		-- Use dynamic prefixes if using our external Administration system.
-		if useAdminSystem then
+		if SSConfig.useAdminSystem then
 			if modModerator[getip(CN)] then
 				chatPrefix = "M"
 			end
@@ -206,7 +213,7 @@ function onInit()
 		end
 		
 		-- Block muted clients if using our external Muting system.
-		if useMuteSystem then
+		if SSConfig.useMuteSystem then
 			if isMuted[getip(CN)] then
 				blockChatReason = "Client is muted."
 				blockChat(CN, text, isTeam, isMe, blockChatReason)
@@ -215,7 +222,7 @@ function onInit()
 		end
 		
 		-- Test for profanity if using a filter system.
-		if useChatFilter then
+		if SSConfig.useChatFilter then
 			if not chatIsClean(text) then
 				blockChatReason = "Chat contains profanity."
 				blockChat(CN, text, isTeam, isMe, blockChatReason)
@@ -224,7 +231,7 @@ function onInit()
 		end
 		
 		-- Convert colour codes if enabled on our server.
-		if colouredText then
+		if SSConfig.colouredText then
 			text = string.gsub(text, "\\f", "\f")
 		end
 		
