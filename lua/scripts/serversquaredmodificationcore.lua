@@ -19,7 +19,7 @@ Written by server <serversquaredmain@gmail.com>, January 2015.
 -- Logging control
 SSLog = {
 logMod = true,					-- Turn on or off mod logging.
-debugMode = true,				-- Turn on or off debug (verbose) mode. This WILL write to the log.
+debugMode = false,				-- Turn on or off debug (verbose) mode. This WILL write to the log.
 logInfo = true					-- Turn on or off logging "INFO" level messages.
 }
 
@@ -30,24 +30,26 @@ function serverLog(message, level, sender)
 		return
 	end
 	-- Log and print message, warn if incorrect syntax.
-	if level == 0  and message ~= nil and sender ~= nil and SSLog.debugMode then
+	if level == 0 and message ~= nil and sender ~= nil and SSLog.debugMode then
 		print("[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
-	elseif level == 1  and message ~= nil and sender ~= nil and SSLog.debugMode then
+	elseif level == 1 and message ~= nil and sender ~= nil and SSLog.debugMode then
 		print("[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
-	elseif level == 2  and message ~= nil and sender ~= nil and SSLog.logInfo then
+	elseif level == 2 and message ~= nil and sender ~= nil and SSLog.logInfo then
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/INFO]: " .. message)
-	elseif level == 3  and message ~= nil and sender ~= nil then
+	elseif level == 3 and message ~= nil and sender ~= nil then
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/WARN]: " .. message)
-	elseif level == 4  and message ~= nil and sender ~= nil then
+	elseif level == 4 and message ~= nil and sender ~= nil then
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/ERROR]: " .. message)
-	elseif level == 20  and message ~= nil and sender ~= nil then
+	elseif level == 20 and message ~= nil and sender ~= nil then
 		logline(4, "[" .. os.date("%X") .. "] [" .. sender .. "/FATAL]: " .. message)
-	elseif level == 21  and message ~= nil and sender ~= nil then
+	elseif level == 21 and message ~= nil and sender ~= nil then
 		logline(2, "[" .. os.date("%X") .. "] [" .. sender .. "/SHUTDOWN]: " .. message)
-	elseif level == 22  and message ~= nil and sender ~= nil then
+	elseif level == 22 and message ~= nil and sender ~= nil then
 		logline(1, "[" .. os.date("%X") .. "] [" .. sender .. "/CHAT]: " .. message)
+	elseif (level == 0 and message ~= nil and sender ~= nil and not SSLog.debugMode) or (level == 1 and message ~= nil and sender ~= nil and not SSLog.debugMode) or (level == 2 and message ~= nil and sender ~= nil and not SSLog.logInfo) then
+		return
 	else
 		logline(3, "[" .. os.date("%X") .. "] [Server Core/WARN]: Log message was sent in the incorrect syntax.")
 	end
