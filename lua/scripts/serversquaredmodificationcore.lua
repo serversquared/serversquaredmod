@@ -1,11 +1,6 @@
 PLUGIN_NAME = "(server)^2 Modification"
 PLUGIN_AUTHOR = "server"
 PLUGIN_VERSION = "9.0.0" -- In development!
-ALPHA = true
-BETA = false
-BUILD_DATE = "17 January 2015"
-COPYRIGHT_REGISTRATION_YEAR = "2015"
-SS_SITE = "serversquared.noip.me"
 
 --[[ ################################################################
 Copyright (C) server - All Rights Reserved.
@@ -22,6 +17,11 @@ SSCore.baseversionCore = "9"			-- Base version of the Core.
 SSCore.baseversionAPI = "1"				-- Base version of the Core API. Modules should probably work if they were written for this base version.
 SSCore.versionCore = "9.0.0"			-- Version of the Core.
 SSCore.versionAPI = "1.0"				-- Version of the Core API. 
+SSCore.alpha = true						-- True if this build is an alpha build.
+SSCore.beta = false						-- True if this build is a beta build.
+SSCore.buildDate = "17 January 2015"	-- Build date of this release. Not changed for dev builds.
+SSCore.copyright = "2015"				-- Year of Copyright registration.
+SSCore.url = "serversquared.noip.me"	-- URL of the (server)^2 website.
 SSCore.enableLog = true					-- Turn on or off mod logging.
 SSCore.debugMode = false				-- Turn on or off debug (verbose) mode. This WILL write to the log.
 SSCore.logInfo = true					-- Turn on or off logging "INFO" level messages.
@@ -260,7 +260,7 @@ function SSCore.configServer()
 	-- Present a friendly message for the server configuration interface.
 	SSCore.log("Writing configuration interface.", 1, "Server Core")
 	io.write("\nWelcome to (server)^2 Modification version " .. PLUGIN_VERSION .. "!")
-	if ALPHA or BETA then io.write("\n********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************") end
+	if SSCore.alpha or SSCore.beta then io.write("\n********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************") end
 	io.write("\nPlease report any bugs to the issue tracker at:")
 	io.write("\nhttps://github.com/account3r2/serversquaredmod/issues")
 	io.write("\nLet's configure your server.")
