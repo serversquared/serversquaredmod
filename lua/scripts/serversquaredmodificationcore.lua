@@ -76,7 +76,7 @@ socket = require("socket")
 -- Load Lua-Ex
 require("ex")
 
-function onInit()
+function init()
 	serverLog("Initializing the Modification.", 2, "Server Core")
 	-- Load our variables.
 	serverLog("Loading Global configuration variables.", 1, "Server Core")
@@ -104,76 +104,6 @@ function onInit()
 		v = string.gsub(v, "\f", "\\f")
 		serverLog(k .. " = " .. v, 0, "Server Core")
 	end
-
-	-- Present a friendly message for the server configuration interface.
-	serverLog("Writing configuration interface.", 1, "Server Core")
-	io.write("\nWelcome to (server)^2 Modification version " .. PLUGIN_VERSION .. "!")
-	if ALPHA or BETA then io.write("\n********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************") end
-	io.write("\nPlease report any bugs to the issue tracker at:")
-	io.write("\nhttps://github.com/account3r2/serversquaredmod/issues")
-	io.write("\nLet's configure your server.")
-	io.write("\n============================================================")
-	-- Get current working directory
-	serverLog("Getting Current Working Directory.", 1, "Server Core")
-	ACPath = os.currentdir()
-	serverLog("We are here: " .. ACPath, 0, "Server Core")
-	-- Should we load a configuration file?
-	repeat
-		io.write("\nLoad from config file? Answer n if you don't have one. (y/n)")
-		io.write("\n>")
-		configAnswer = io.read()
-		if configAnswer == "n" then
-			loadFromConfig = false
-		elseif configAnswer == blank or configAnswer == "y" then
-			loadFromConfig = true
-		end
-	until loadFromConfig ~= nil
-	-- Finish configuring the server if user answered no.
-	if not loadFromConfig then
-	serverLog("User wants to create a new config.", 1, "Server Core")
-		-- What should the server be called?
-		io.write("\nWhat would you like your server to be called?")
-		io.write("\nUse the server colour codes if desired.")
-		io.write("\n>")
-		serverName = (io.read() or blank)
-		-- Get the user website for our API.
-		io.write("\nWhat's your website URL?")
-		io.write("\n>")
-		serverWebsite = (io.read() or blank)
-		-- Make it easier on the user and offer a config save.
-		repeat
-			io.write("\nWould you like to save your configuration?")
-			io.write("\n>")
-			configAnswer = io.read()
-			if configAnswer == "n" then
-				serverLog("User completed config, and does not want to save to file.", 1, "Server Core")
-				configCompleted = true
-			elseif configAnswer == blank or configAnswer == "y" then
-				serverLog("User completed config. Starting write to file.", 1, "Server Core")
-				if not cfg.exists("serversquared.serverconfig") then
-					serverLog("Config does not exist. Creating a new file.", 0, "Server Core")
-					cfg.createfile("serversquared.serverconfig")
-				end
-				serverLog("Writing config values to file.", 0, "Server Core")
-				cfg.setvalue("serversquared.serverconfig", "serverName", serverName)
-				cfg.setvalue("serversquared.serverconfig", "serverWebsite", serverWebsite)
-				serverLog("Config saved.", 0, "Server Core")
-				io.write("\nConfiguration saved.")
-				configCompleted = true
-			end
-		until configCompleted == true
-		
-		-- Load configuration if user answered yes previously.
-		else
-			serverLog("Loading configuration from file.", 1, "Server Core")
-			serverName = cfg.getvalue("serversquared.serverconfig", "serverName")
-			serverWebsite = cfg.getvalue("serversquared.serverconfig", "serverWebsite")
-			serverLog("serverName = " .. serverName, 0, "Server Core")
-			serverLog("serverWebsite = " .. serverWebsite, 0, "Server Core")
-	end
-	-- Tell user configuration is complete and we'll take it from here.
-	io.write("\nThank you for using (server)^2 Modification!")
-	io.write("\nThe modification will now continue to load.\n")
 	
 	-- Core functions.
 	-- Make it easier to talk to the players.
@@ -337,6 +267,78 @@ function onInit()
 	end
 end
 
+function configServer()
+	-- Present a friendly message for the server configuration interface.
+	serverLog("Writing configuration interface.", 1, "Server Core")
+	io.write("\nWelcome to (server)^2 Modification version " .. PLUGIN_VERSION .. "!")
+	if ALPHA or BETA then io.write("\n********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************") end
+	io.write("\nPlease report any bugs to the issue tracker at:")
+	io.write("\nhttps://github.com/account3r2/serversquaredmod/issues")
+	io.write("\nLet's configure your server.")
+	io.write("\n============================================================")
+	-- Get current working directory
+	serverLog("Getting Current Working Directory.", 1, "Server Core")
+	ACPath = os.currentdir()
+	serverLog("We are here: " .. ACPath, 0, "Server Core")
+	-- Should we load a configuration file?
+	repeat
+		io.write("\nLoad from config file? Answer n if you don't have one. (y/n)")
+		io.write("\n>")
+		configAnswer = io.read()
+		if configAnswer == "n" then
+			loadFromConfig = false
+		elseif configAnswer == blank or configAnswer == "y" then
+			loadFromConfig = true
+		end
+	until loadFromConfig ~= nil
+	-- Finish configuring the server if user answered no.
+	if not loadFromConfig then
+	serverLog("User wants to create a new config.", 1, "Server Core")
+		-- What should the server be called?
+		io.write("\nWhat would you like your server to be called?")
+		io.write("\nUse the server colour codes if desired.")
+		io.write("\n>")
+		serverName = (io.read() or blank)
+		-- Get the user website for our API.
+		io.write("\nWhat's your website URL?")
+		io.write("\n>")
+		serverWebsite = (io.read() or blank)
+		-- Make it easier on the user and offer a config save.
+		repeat
+			io.write("\nWould you like to save your configuration?")
+			io.write("\n>")
+			configAnswer = io.read()
+			if configAnswer == "n" then
+				serverLog("User completed config, and does not want to save to file.", 1, "Server Core")
+				configCompleted = true
+			elseif configAnswer == blank or configAnswer == "y" then
+				serverLog("User completed config. Starting write to file.", 1, "Server Core")
+				if not cfg.exists("serversquared.serverconfig") then
+					serverLog("Config does not exist. Creating a new file.", 0, "Server Core")
+					cfg.createfile("serversquared.serverconfig")
+				end
+				serverLog("Writing config values to file.", 0, "Server Core")
+				cfg.setvalue("serversquared.serverconfig", "serverName", serverName)
+				cfg.setvalue("serversquared.serverconfig", "serverWebsite", serverWebsite)
+				serverLog("Config saved.", 0, "Server Core")
+				io.write("\nConfiguration saved.")
+				configCompleted = true
+			end
+		until configCompleted == true
+		
+		-- Load configuration if user answered yes previously.
+		else
+			serverLog("Loading configuration from file.", 1, "Server Core")
+			serverName = cfg.getvalue("serversquared.serverconfig", "serverName")
+			serverWebsite = cfg.getvalue("serversquared.serverconfig", "serverWebsite")
+			serverLog("serverName = " .. serverName, 0, "Server Core")
+			serverLog("serverWebsite = " .. serverWebsite, 0, "Server Core")
+	end
+	-- Tell user configuration is complete and we'll take it from here.
+	io.write("\nThank you for using (server)^2 Modification!")
+	io.write("\nThe modification will now continue to load.\n")
+end
+
 -- Core Commands
 commands = {
 	["!loadModule"] = {
@@ -364,6 +366,12 @@ commands = {
 	end
 	};
 }
+
+
+function onInit()
+	init()
+	configServer()
+end
 
 function onDestroy()
 	serverLog("The server is being stopped gracefully.", 21, "Server Core")
