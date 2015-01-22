@@ -117,6 +117,13 @@ function SSCore.init()
 		end
 		SSCore.log("Loading Module" .. (unloadModule and " in unload mode" or blank) .. ": " .. moduleName, 2, "Server Core")
 		if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
+			if unloadModule then
+				onModuleUnload()
+			elseif not unloadModule then
+				onModuleLoad()
+			end
+			onModuleLoad = nil
+			onModuleUnload = nil
 			local loadTime = (getsvtick() - loadStartTick)
 			SSCore.log("Successfully loaded Module in " .. loadTime .. "ms.", 2, "Server Core")
 			if unloadModule then
