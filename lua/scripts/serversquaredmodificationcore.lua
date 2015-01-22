@@ -16,35 +16,30 @@ visit http://creativecommons.org/licenses/by-nd/4.0/.
 Written by server <serversquaredmain@gmail.com>, January 2015.
      ################################################################   ]]
 
--- Table of this mod's info
-SSCore = {
-baseversionCore = "9",			-- Base version of the Core.
-baseversionAPI = "1",			-- Base version of the Core API. Modules should probably work if they were written for this base version.
-versionCore = "9.0.0",			-- Version of the Core.
-versionAPI = "1.0"				-- Version of the Core API. 
-}
-
--- Logging control
-SSLog = {
-logMod = true,					-- Turn on or off mod logging.
-debugMode = false,				-- Turn on or off debug (verbose) mode. This WILL write to the log.
-logInfo = true					-- Turn on or off logging "INFO" level messages.
-}
+-- Main table for the Core.
+SSCore = {}
+SSCore.baseversionCore = "9"			-- Base version of the Core.
+SSCore.baseversionAPI = "1"				-- Base version of the Core API. Modules should probably work if they were written for this base version.
+SSCore.versionCore = "9.0.0"			-- Version of the Core.
+SSCore.versionAPI = "1.0"				-- Version of the Core API. 
+SSCore.enableLog = true					-- Turn on or off mod logging.
+SSCore.debugMode = false				-- Turn on or off debug (verbose) mode. This WILL write to the log.
+SSCore.logInfo = true					-- Turn on or off logging "INFO" level messages.
 
 -- Function to write the log.
-function serverLog(message, level, sender)
+function SSCore.log(message, level, sender)
 	-- Do not continue if logging is off
-	if not SSLog.logMod then
+	if not SSCore.enableLog then
 		return
 	end
 	-- Log and print message, warn if incorrect syntax.
-	if level == 0 and message ~= nil and sender ~= nil and SSLog.debugMode then
+	if level == 0 and message ~= nil and sender ~= nil and SSCore.debugMode then
 		print("[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
-	elseif level == 1 and message ~= nil and sender ~= nil and SSLog.debugMode then
+	elseif level == 1 and message ~= nil and sender ~= nil and SSCore.debugMode then
 		print("[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/DEBUG]: " .. message)
-	elseif level == 2 and message ~= nil and sender ~= nil and SSLog.logInfo then
+	elseif level == 2 and message ~= nil and sender ~= nil and SSCore.logInfo then
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/INFO]: " .. message)
 	elseif level == 3 and message ~= nil and sender ~= nil then
 		logline(level, "[" .. os.date("%X") .. "] [" .. sender .. "/WARN]: " .. message)
@@ -56,7 +51,7 @@ function serverLog(message, level, sender)
 		logline(2, "[" .. os.date("%X") .. "] [" .. sender .. "/SHUTDOWN]: " .. message)
 	elseif level == 22 and message ~= nil and sender ~= nil then
 		logline(1, "[" .. os.date("%X") .. "] [" .. sender .. "/CHAT]: " .. message)
-	elseif (level == 0 and message ~= nil and sender ~= nil and not SSLog.debugMode) or (level == 1 and message ~= nil and sender ~= nil and not SSLog.debugMode) or (level == 2 and message ~= nil and sender ~= nil and not SSLog.logInfo) then
+	elseif (level == 0 and message ~= nil and sender ~= nil and not SSCore.debugMode) or (level == 1 and message ~= nil and sender ~= nil and not SSCore.debugMode) or (level == 2 and message ~= nil and sender ~= nil and not SSCore.logInfo) then
 		return
 	else
 		logline(3, "[" .. os.date("%X") .. "] [Server Core/WARN]: Log message was sent in the incorrect syntax.")
@@ -66,6 +61,7 @@ end
 -- Define blank to help prevent errors, space to make spaces more readable.
 blank = ""
 space = " "
+baaaby = "and I\'ll write your name"
 
 -- Include the AssaultCube server core.
 include("ac_server")
@@ -76,200 +72,186 @@ socket = require("socket")
 -- Load Lua-Ex
 require("ex")
 
-function init()
-	serverLog("Initializing the Modification.", 2, "Server Core")
+function SSCore.init()
+	SSCore.log("Initializing the Modification.", 2, "Server Core")
 	-- Load our variables.
-	serverLog("Loading Global configuration variables.", 1, "Server Core")
-	SSConfig = {
-	textEcho = false,				-- Global echo back coloured text.
-	colouredText = true,			-- Allow or disallow coloured chat.
-	useAdminSystem = false,			-- Use an external Administration system.
-	useMuteSystem = false,			-- Use an external player muting system.
-	useChatFilter = false			-- Use an external chat filter system.
-	}
-	for k,v in pairs(SSConfig) do
-		serverLog(k .. " = " .. (v and "true" or "false"), 0, "Server Core")
-	end
-	-- Initialize our tables.
-	serverLog("Initializing table of loaded Modules.", 1, "Server Core")
-	loadedModules = {}				-- Table of Modules that we've loaded.
-	serverLog("Loading server colour configuration.", 1, "Server Core")
-	serverColour = {				-- Table of colours for the server.
-	"\f4",							-- Primary colour.
-	"\f3",							-- Secondary colour.
-	"\f0",							-- Public chat colour.
-	"\f1"							-- Team chat colour.
-	}
-	for k,v in pairs(serverColour) do
-		v = string.gsub(v, "\f", "\\f")
-		serverLog(k .. " = " .. v, 0, "Server Core")
-	end
+	SSCore.log("Loading Global configuration variables.", 1, "Server Core")
+	SSCore.chatEcho = false					-- Global echo back coloured chat.
+	SSCore.colouredChat = true				-- Allow or disallow coloured chat.
+	SSCore.useAdminSystem = false			-- Use an external Administration system.
+	SSCore.useMuteSystem = false			-- Use an external player muting system.
+	SSCore.useChatFilter = false			-- Use an external chat filter system.
+	SSCore.log("Loading server colour configuration.", 1, "Server Core")
+	SSCore.serverColours = {}				-- Table of colours for the server.
+	SSCore.serverColours.primary = "\f4"	-- Primary colour.
+	SSCore.serverColours.secondary = "\f3"	-- Secondary colour.
+	SSCore.serverColours.chatPublic = "\f0"	-- Public chat colour.
+	SSCore.serverColours.chatTeam = "\f1"	-- Team chat colour.
 	
 	-- Core functions.
 	-- Make it easier to talk to the players.
-	function say(text, toCN, excludeCN)
-		serverLog("Starting say function.", 1, "Server Core")
+	function SSCore.say(text, toCN, excludeCN)
+		SSCore.log("Starting say function.", 1, "Server Core")
 		if toCN == nil then
-			serverLog("Recipient was not given, making the message global.", 0, "Server Core")
+			SSCore.log("Recipient was not given, making the message global.", 0, "Server Core")
 			toCN = -1
 		end
 		if excludeCN == nil then
-			serverLog("Excluded client was not given, making the message global.", 0, "Server Core")
+			SSCore.log("Excluded client was not given, making the message global.", 0, "Server Core")
 			excludeCN = -1
 		end
 		if text == nil then
-			serverLog("Text was not given, sending a blank message.", 0, "Server Core")
+			SSCore.log("Text was not given, sending a blank message.", 0, "Server Core")
 			text = blank
 		end
-		serverLog("Printing to " .. toCN .. " excluding " .. excludeCN, 1, "Server Core")
+		SSCore.log("Printing to " .. toCN .. " excluding " .. excludeCN, 1, "Server Core")
 		clientprint(toCN, text, excludeCN)
 	end
 
 	-- Run a Module.
-	function runModule(moduleName, unloadModule, booleanMode)
-		serverLog("Starting runModule function.", 1, "Server Core")
+	function SSCore.runModule(moduleName, unloadModule, booleanMode)
+		SSCore.log("Starting runModule function.", 1, "Server Core")
 		local loadStartTick = getsvtick()
 		if unloadModule == nil or moduleName == nil then
-			serverLog("runModule was called using incorrect syntax, stopping.", 3, "Server Core")
+			SSCore.log("runModule was called using incorrect syntax, stopping.", 3, "Server Core")
 		end
-		serverLog("Loading Module" .. (unloadModule and " in unload mode" or blank) .. ": " .. moduleName, 2, "Server Core")
+		SSCore.log("Loading Module" .. (unloadModule and " in unload mode" or blank) .. ": " .. moduleName, 2, "Server Core")
 		if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
 			local loadTime = (getsvtick() - loadStartTick)
-			serverLog("Successfully loaded Module in " .. loadTime .. "ms.", 2, "Server Core")
+			SSCore.log("Successfully loaded Module in " .. loadTime .. "ms.", 2, "Server Core")
 			if unloadModule then
-				loadedModules[moduleName] = nil
-				serverLog("Removed module from loadedModules table.", 0, "Server Core")
+				SSCore.loadedModules[moduleName] = nil
+				SSCore.log("Removed module from loadedModules table.", 0, "Server Core")
 			else
-				loadedModules[moduleName] = true
-				checkModule(moduleName, moduleConfig)
-				serverLog("Added Module to loadedModules table.", 0, "Server Core")
+				SSCore.loadedModules[moduleName] = true
+				SSCore.checkModule(moduleName, moduleConfig)
+				SSCore.log("Added Module to loadedModules table.", 0, "Server Core")
 			end
 			if booleanMode ~= nil and booleanMode then
 				return true
 			end
 		else
-			serverLog("Error loading Module.", 4, "Server Core")
+			SSCore.log("Error loading Module.", 4, "Server Core")
 			if booleanMode ~= nil and booleanMode then
 				return false
 			end
 		end
-		unloadModule = nil
 	end
 
 	-- Check if a Module is built for our API base version.
-	function checkModule(moduleName, moduleConfig)
+	function SSCore.checkModule(moduleName, moduleConfig)
 		if moduleConfig ~= nil then
 			if moduleConfig.usesbaseAPI ~= nil and moduleConfig.usesbaseAPI < SSCore.baseversionAPI then
-				serverLog("Module " .. moduleName .. " is built for old API version " .. moduleConfig.usesAPI .. ". It may have compatibility issues.", 3, "Server Core")
+				SSCore.log("Module " .. moduleName .. " is built for old API version " .. moduleConfig.usesAPI .. ". It may have compatibility issues.", 3, "Server Core")
 			end
 		else
-			serverLog("Module " .. moduleName .. " does not have a config. This may cause issues if the API version is outdated.", 3, "Server Core") 
+			SSCore.log("Module " .. moduleName .. " does not have a config. This may cause issues if the API version is outdated.", 3, "Server Core") 
 		end
 	end
 
 	-- Chat printing
-	function printChat(text, CN, chatPrefix, isTeam, isMe)
+	function SSCore.printChat(text, CN, chatPrefix, isTeam, isMe)
 		print("[" .. os.date("%X") .. "] [" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"")
-		serverLog("[" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"", 22, "Server Core")
+		SSCore.log("[" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"", 22, "Server Core")
 		if isTeam then
 			for x=0,maxclient(),1 do
 				if getteam(CN) == getteam(x) and CN ~= x then
-					say(serverColour[1] .. CN .. "\f3" .. chatPrefix .. serverColour[2] .. "#" .. (isMe and serverColour[4] or "\f5") .. getname(CN) .. serverColour[4] .. (isMe and space or ": ") .. text, x, (SSConfig.textEcho and -1 or CN))
+					SSCore.say(SSCore.serverColours.primary .. CN .. "\f3" .. chatPrefix .. SSCore.serverColours.secondary .. "#" .. (isMe and SSCore.serverColours.chatTeam or "\f5") .. getname(CN) .. SSCore.serverColours.chatTeam .. (isMe and space or ": ") .. text, x, (SSCore.chatEcho and -1 or CN))
 				end
 			end
 		else
-			say(serverColour[1] .. CN .. "\f3" .. chatPrefix .. serverColour[2] .. "#" .. (isMe and serverColour[3] or "\f5") .. getname(CN) .. serverColour[3] .. (isMe and space or ": ") .. text, -1, (SSConfig.textEcho and -1 or CN))
+			SSCore.say(SSCore.serverColours.primary .. CN .. "\f3" .. chatPrefix .. SSCore.serverColours.secondary .. "#" .. (isMe and SSCore.serverColours.chatPublic or "\f5") .. getname(CN) .. SSCore.serverColours.chatPublic .. (isMe and space or ": ") .. text, -1, (SSCore.chatEcho and -1 or CN))
 		end
 	end
 
 	-- Chat decoding and processing. Chat and commands will probably break if this is changed by a Module, unless they know what they're doing.
 	function onPlayerSayText(CN, text, isTeam, isMe)
-		serverLog("Starting processing client chat.", 1, "Server Core")
+		SSCore.log("Starting processing client chat.", 1, "Server Core")
 		-- Initialize chatPrefix.
-		serverLog("Setting chat prefix to blank.", 0, "Server Core")
-		chatPrefix = blank
+		SSCore.log("Setting chat prefix to blank.", 0, "Server Core")
+		local chatPrefix = blank
 		
 		-- Make a Server Master prefix if using default admin system.
 		if isadmin(CN) then
-			serverLog("Client is logged in as the server administrator, not using modded system. Setting prefix to @.", 0, "Server Core")
-			chatPrefix = "@"
+			SSCore.log("Client is logged in as the server administrator, not using modded system. Setting prefix to @.", 0, "Server Core")
+			local chatPrefix = "@"
 		end
 		
 		-- Use dynamic prefixes if using our external Administration system.
-		if SSConfig.useAdminSystem then
-			serverLog("Server is using modded admin system, checking for permissions.", 0, "Server Core")
+		if SSCore.useAdminSystem then
+			SSCore.log("Server is using modded admin system, checking for permissions.", 0, "Server Core")
 			if modModerator[getname(CN)] then
-				serverLog("Client has Moderator permissions. Setting prefix to M.", 0, "Server Core")
-				chatPrefix = "M"
+				SSCore.log("Client has Moderator permissions. Setting prefix to M.", 0, "Server Core")
+				local chatPrefix = "M"
 			end
 			if modAdministrator[getip(CN)] then
-				serverLog("Client has Administrator permissions. Setting prefix to A.", 0, "Server Core")
-				chatPrefix = "A"
+				SSCore.log("Client has Administrator permissions. Setting prefix to A.", 0, "Server Core")
+				local chatPrefix = "A"
 			end
 			if modMaster[getip(CN)] then
-				serverLog("Client has Master permissions. Setting prefix to @.", 0, "Server Core")
-				chatPrefix = "@"
+				SSCore.log("Client has Master permissions. Setting prefix to @.", 0, "Server Core")
+				local chatPrefix = "@"
 			end
 		end
 		
 		-- Block muted clients if using our external Muting system.
-		if SSConfig.useMuteSystem then
-			serverLog("Server is using modded mute system, if client is muted.", 0, "Server Core")
+		if SSCore.useMuteSystem then
+			SSCore.log("Server is using modded mute system, if client is muted.", 0, "Server Core")
 			if isMuted[getip(CN)] then
-				serverLog("Client is muted, stopping chat processing.", 0, "Server Core")
+				SSCore.log("Client is muted, stopping chat processing.", 0, "Server Core")
 				blockChatReason = "Client is muted."
-				serverLog("Sending chat to mute system to take over chat processing.", 0, "Server Core")
+				SSCore.log("Sending chat to mute system to take over chat processing.", 0, "Server Core")
 				blockChat(CN, text, isTeam, isMe, blockChatReason)
 				return PLUGIN_BLOCK
 			end
 		end
 		
 		-- Test for profanity if using a filter system.
-		if SSConfig.useChatFilter then
-			serverLog("Server is using modded profanity filter, checking for bloked words.", 0, "Server Core")
+		if SSCore.useChatFilter then
+			SSCore.log("Server is using modded profanity filter, checking for bloked words.", 0, "Server Core")
 			if not chatIsClean(text) then
-				serverLog("Chat contains a blocked word, stopping chat processing.", 0, "Server Core")
+				SSCore.log("Chat contains a blocked word, stopping chat processing.", 0, "Server Core")
 				blockChatReason = "Chat contains profanity."
-				serverLog("Sending chat to filter system to take over chat processing.", 0, "Server Core")
+				SSCore.log("Sending chat to filter system to take over chat processing.", 0, "Server Core")
 				blockChat(CN, text, isTeam, isMe, blockChatReason)
 				return PLUGIN_BLOCK
 			end
 		end
 		
 		-- Convert colour codes if enabled on our server.
-		if SSConfig.colouredText then
-			serverLog("Server has coloured text enabled, reprocessing and converting colour codes.", 0, "Server Core")
-			text = string.gsub(text, "\\f", "\f")
+		if SSCore.colouredChat then
+			SSCore.log("Server has coloured text enabled, reprocessing and converting colour codes.", 0, "Server Core")
+			local text = string.gsub(text, "\\f", "\f")
 		end
 		
 		-- Split the text into an array.
-		serverLog("Converting the sent chat into a table for command processing.", 0, "Server Core")
+		SSCore.log("Converting the sent chat into a table for command processing.", 0, "Server Core")
 		local array = split(text, " ")
 		-- Separate the command from the arguments.
-		serverLog("Separating the command (first table entry) from the arguments.", 0, "Server Core")
+		SSCore.log("Separating the command (first table entry) from the arguments.", 0, "Server Core")
 		local command, args = array[1], slice(array, 2)
 		-- Check if the text is a command, execute if it is.
 		if commands[command] ~= nil then
-			serverLog("Chat is a command, processing from command list.", 1, "Server Core")
+			SSCore.log("Chat is a command, processing from command list.", 1, "Server Core")
 			local callback = commands[command][1]
 			callback(CN, args)
 			return PLUGIN_BLOCK
 		elseif string.byte(command,1) == string.byte("!",1) then
-			serverLog("Chat is not a command but in command notation. Stopping chat processing.", 1, "Server Core")
+			SSCore.log("Chat is not a command but in command notation. Stopping chat processing.", 1, "Server Core")
 			print("Not a command: \"" .. command .. "\"")
 			return PLUGIN_BLOCK		
 		end
 		
 		-- Chat function
-		serverLog("Initial chat processing complete, sending to printChat to determine teams and /me.", 1, "Server Core")
-		printChat(text, CN, chatPrefix, isTeam, isMe)
+		SSCore.log("Initial chat processing complete, sending to printChat to determine teams and /me.", 1, "Server Core")
+		SSCore.printChat(text, CN, chatPrefix, isTeam, isMe)
 		return PLUGIN_BLOCK
 	end
 end
 
-function configServer()
+function SSCore.configServer()
 	-- Present a friendly message for the server configuration interface.
-	serverLog("Writing configuration interface.", 1, "Server Core")
+	SSCore.log("Writing configuration interface.", 1, "Server Core")
 	io.write("\nWelcome to (server)^2 Modification version " .. PLUGIN_VERSION .. "!")
 	if ALPHA or BETA then io.write("\n********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************") end
 	io.write("\nPlease report any bugs to the issue tracker at:")
@@ -277,9 +259,9 @@ function configServer()
 	io.write("\nLet's configure your server.")
 	io.write("\n============================================================")
 	-- Get current working directory
-	serverLog("Getting Current Working Directory.", 1, "Server Core")
-	ACPath = os.currentdir()
-	serverLog("We are here: " .. ACPath, 0, "Server Core")
+	SSCore.log("Getting Current Working Directory.", 1, "Server Core")
+	SSCore.ACPath = os.currentdir()
+	SSCore.log("We are here: " .. SSCore.ACPath, 0, "Server Core")
 	-- Should we load a configuration file?
 	repeat
 		io.write("\nLoad from config file? Answer n if you don't have one. (y/n)")
@@ -293,34 +275,34 @@ function configServer()
 	until loadFromConfig ~= nil
 	-- Finish configuring the server if user answered no.
 	if not loadFromConfig then
-	serverLog("User wants to create a new config.", 1, "Server Core")
+	SSCore.log("User wants to create a new config.", 1, "Server Core")
 		-- What should the server be called?
 		io.write("\nWhat would you like your server to be called?")
 		io.write("\nUse the server colour codes if desired.")
 		io.write("\n>")
-		serverName = (io.read() or blank)
+		SSCore.serverName = (io.read() or blank)
 		-- Get the user website for our API.
 		io.write("\nWhat's your website URL?")
 		io.write("\n>")
-		serverWebsite = (io.read() or blank)
+		SSCore.serverWebsite = (io.read() or blank)
 		-- Make it easier on the user and offer a config save.
 		repeat
 			io.write("\nWould you like to save your configuration?")
 			io.write("\n>")
 			configAnswer = io.read()
 			if configAnswer == "n" then
-				serverLog("User completed config, and does not want to save to file.", 1, "Server Core")
+				SSCore.log("User completed config, and does not want to save to file.", 1, "Server Core")
 				configCompleted = true
 			elseif configAnswer == blank or configAnswer == "y" then
-				serverLog("User completed config. Starting write to file.", 1, "Server Core")
+				SSCore.log("User completed config. Starting write to file.", 1, "Server Core")
 				if not cfg.exists("serversquared.serverconfig") then
-					serverLog("Config does not exist. Creating a new file.", 0, "Server Core")
+					SSCore.log("Config does not exist. Creating a new file.", 0, "Server Core")
 					cfg.createfile("serversquared.serverconfig")
 				end
-				serverLog("Writing config values to file.", 0, "Server Core")
-				cfg.setvalue("serversquared.serverconfig", "serverName", serverName)
-				cfg.setvalue("serversquared.serverconfig", "serverWebsite", serverWebsite)
-				serverLog("Config saved.", 0, "Server Core")
+				SSCore.log("Writing config values to file.", 0, "Server Core")
+				cfg.setvalue("serversquared.serverconfig", "serverName", SSCore.serverName)
+				cfg.setvalue("serversquared.serverconfig", "serverWebsite", SSCore.serverWebsite)
+				SSCore.log("Config saved.", 0, "Server Core")
 				io.write("\nConfiguration saved.")
 				configCompleted = true
 			end
@@ -328,12 +310,16 @@ function configServer()
 		
 		-- Load configuration if user answered yes previously.
 		else
-			serverLog("Loading configuration from file.", 1, "Server Core")
-			serverName = cfg.getvalue("serversquared.serverconfig", "serverName")
-			serverWebsite = cfg.getvalue("serversquared.serverconfig", "serverWebsite")
-			serverLog("serverName = " .. serverName, 0, "Server Core")
-			serverLog("serverWebsite = " .. serverWebsite, 0, "Server Core")
+			SSCore.log("Loading configuration from file.", 1, "Server Core")
+			SSCore.serverName = cfg.getvalue("serversquared.serverconfig", "serverName")
+			SSCore.serverWebsite = cfg.getvalue("serversquared.serverconfig", "serverWebsite")
+			SSCore.log("serverName = " .. SSCore.serverName, 0, "Server Core")
+			SSCore.log("serverWebsite = " .. SSCore.serverWebsite, 0, "Server Core")
 	end
+	
+	configAnswer = nil
+	configCompleted = nil
+	
 	-- Tell user configuration is complete and we'll take it from here.
 	io.write("\nThank you for using (server)^2 Modification!")
 	io.write("\nThe modification will now continue to load.\n")
@@ -343,25 +329,25 @@ end
 commands = {
 	["!loadModule"] = {
 	function (CN, args)
-		serverLog("loadModule command started.", 1, "Server Core")
+		SSCore.log("loadModule command started.", 1, "Server Core")
 		if args[2] ~= nil and  ("remove" or "unload") then 
-			serverLog("Unload mode set.", 0, "Server Core")
+			SSCore.log("Unload mode set.", 0, "Server Core")
 			unloadModule = true
 		else
 			unloadModule = false
 		end
-		serverLog("Calling runModule to load the Module.", 0, "Server Core")
-		if runModule(args[1], unloadModule, true) then
-			say("Module was loaded successfully.", CN)
+		SSCore.log("Calling runModule to load the Module.", 0, "Server Core")
+		if SSCore.runModule(args[1], unloadModule, true) then
+			SSCore.say("Module was loaded successfully.", CN)
 		else
-			say("Module failed to load.", CN)
+			SSCore.say("Module failed to load.", CN)
 		end
 	end
 	};
 	
 	["!stop"] = {
 	function (CN, args)
-		serverLog("Shutting down the server (Sent from player: " .. getname(CN) .. ")...", 21, "Server Core")
+		SSCore.log("Shutting down the server (Sent from player: " .. getname(CN) .. ")...", 21, "Server Core")
 		os.exit()
 	end
 	};
@@ -369,18 +355,20 @@ commands = {
 
 
 function onInit()
-	init()
-	configServer()
+	SSCore.log("Initializing table of loaded Modules.", 1, "Server Core")
+	SSCore.loadedModules = {}		-- Table of Modules that we've loaded.
+	SSCore.init()
+	SSCore.configServer()
 end
 
 function onDestroy()
-	serverLog("The server is being stopped gracefully.", 21, "Server Core")
+	SSCore.log("The server is being stopped gracefully.", 21, "Server Core")
 
 	-- Let all loaded Modules do anything they need to before the Core stops.
-	serverLog("Running Module shutdown scripts.", 21, "Server Core")
-	for moduleName in pairs(loadedModules) do
-		serverLog("Unloading Module " .. moduleName, 21, "Server Core")
-		runModule(moduleName, true)
+	SSCore.log("Running Module shutdown scripts.", 21, "Server Core")
+	for moduleName in pairs(SSCore.loadedModules) do
+		SSCore.log("Unloading Module " .. moduleName, 21, "Server Core")
+		SSCore.runModule(moduleName, true)
 	end
 
 	io.write("Thank you for using (server)^2 Modification.\n")
