@@ -336,29 +336,29 @@ end
 -- Core Commands
 commands = {
 	["!loadModule"] = {
-	function (CN, args)
-		SSCore.log("loadModule command started.", 1, "Server Core")
-		if args[2] ~= nil and  ("remove" or "unload") then 
-			SSCore.log("Unload mode set.", 0, "Server Core")
-			unloadModule = true
-		else
-			unloadModule = false
-		end
-		SSCore.log("Calling runModule to load the Module.", 0, "Server Core")
-		if SSCore.runModule(args[1], unloadModule, true) then
-			SSCore.say("Module was loaded successfully.", CN)
-		else
-			SSCore.say("Module failed to load.", CN)
-		end
+		function (CN, args)
+			SSCore.log("loadModule command started.", 1, "Server Core")
+			if args[2] ~= nil and  ("remove" or "unload") then
+				SSCore.log("Unload mode set.", 0, "Server Core")
+				unloadModule = true
+			else
+				unloadModule = false
+			end
+			SSCore.log("Calling runModule to load the Module.", 0, "Server Core")
+			if SSCore.runModule(args[1], unloadModule, true) then
+				SSCore.say("Module was loaded successfully.", CN)
+			else
+				SSCore.say("Module failed to load.", CN)
+			end
 	end
-	};
+	},
 	
 	["!stop"] = {
-	function (CN, args)
-		SSCore.log("Shutting down the server (Sent from player: " .. getname(CN) .. ")...", 21, "Server Core")
-		os.exit()
-	end
-	};
+		function (CN, args)
+			SSCore.log("Shutting down the server (Sent from player: " .. getname(CN) .. ")...", 21, "Server Core")
+			os.exit()
+		end
+	},
 }
 
 
