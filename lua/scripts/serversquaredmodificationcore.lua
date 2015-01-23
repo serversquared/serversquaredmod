@@ -151,6 +151,7 @@ function SSCore.init()
 			if moduleConfig.usesbaseAPI ~= nil and moduleConfig.usesbaseAPI < SSCore.baseversionAPI then
 				SSCore.log("Module " .. moduleName .. " is built for old API version " .. moduleConfig.usesAPI .. ". It may have compatibility issues.", 3, "Server Core")
 			end
+			moduleConfig = nil
 		else
 			SSCore.log("Module " .. moduleName .. " does not have a config. This may cause issues if the API version is outdated.", 3, "Server Core") 
 		end
