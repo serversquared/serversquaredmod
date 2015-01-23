@@ -119,8 +119,18 @@ function SSCore.init()
 		if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
 			if unloadModule then
 				onModuleUnload()
+				if addCommands ~= nil then
+					for commandName in pairs(addCommands) do
+						commands.commandName = nil
+					end
+				end
 			elseif not unloadModule then
 				onModuleLoad()
+				if addCommands ~= nil then
+					for commandName,commandFunction in pairs(addCommands) do
+						commands.commandName = commandFunction
+					end
+				end
 			end
 			onModuleLoad = nil
 			onModuleUnload = nil
@@ -350,15 +360,22 @@ commands = {
 			else
 				SSCore.say("Module failed to load.", CN)
 			end
-	end
+		end
 	},
-	
+
+	["!info"] = {
+		function (CN, args)
+			SSCore.say(SSCore.serverColours.primary .. "(server)^2 Modification Core " .. SSCore.serverColours.secondary .. "v" .. SSCore.versionCore .. SSCore.serverColours.primary .. " Created by " .. SSCore.serverColours.secondary .. "server", CN)
+			SSCore.say(SSCore.serverColours.primary .. "Copyright (C) " .. SSCore.copyright .. " server. All Rights Reserved.", CN)
+		end
+	},
+
 	["!stop"] = {
 		function (CN, args)
 			SSCore.log("Shutting down the server (Sent from player: " .. getname(CN) .. ")...", 21, "Server Core")
 			os.exit()
 		end
-	},
+	}
 }
 
 
