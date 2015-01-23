@@ -260,20 +260,20 @@ end
 function SSCore.configServer()
 	-- Present a friendly message for the server configuration interface.
 	SSCore.log("Writing configuration interface.", 1, "Server Core")
-	io.write("\nWelcome to (server)^2 Modification version " .. PLUGIN_VERSION .. "!")
-	if SSCore.alpha or SSCore.beta then io.write("\n********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************") end
-	io.write("\nPlease report any bugs to the issue tracker at:")
-	io.write("\nhttps://github.com/account3r2/serversquaredmod/issues")
-	io.write("\nLet's configure your server.")
-	io.write("\n============================================================")
+	io.write("\nWelcome to (server)^2 Modification version " .. PLUGIN_VERSION .. "!\n")
+	if SSCore.alpha or SSCore.beta then io.write("********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************\n") end
+	io.write("Please report any bugs to the issue tracker at:\n")
+	io.write("https://github.com/account3r2/serversquaredmod/issues\n")
+	io.write("Let's configure your server.\n")
+	io.write("============================================================\n")
 	-- Get current working directory
 	SSCore.log("Getting Current Working Directory.", 1, "Server Core")
 	SSCore.ACPath = os.currentdir()
 	SSCore.log("We are here: " .. SSCore.ACPath, 0, "Server Core")
 	-- Should we load a configuration file?
 	repeat
-		io.write("\nLoad from config file? Answer n if you don't have one. (y/n)")
-		io.write("\n>")
+		io.write("Load from config file? Answer n if you don't have one. (y/n)\n")
+		io.write(">")
 		configAnswer = io.read()
 		if configAnswer == "n" then
 			loadFromConfig = false
@@ -285,18 +285,18 @@ function SSCore.configServer()
 	if not loadFromConfig then
 	SSCore.log("User wants to create a new config.", 1, "Server Core")
 		-- What should the server be called?
-		io.write("\nWhat would you like your server to be called?")
-		io.write("\nUse the server colour codes if desired.")
-		io.write("\n>")
+		io.write("\nWhat would you like your server to be called?\n")
+		io.write("Use the server colour codes if desired.\n")
+		io.write(">")
 		SSCore.serverName = (io.read() or blank)
 		-- Get the user website for our API.
-		io.write("\nWhat's your website URL?")
-		io.write("\n>")
+		io.write("\nWhat's your website URL?\n")
+		io.write(">")
 		SSCore.serverWebsite = (io.read() or blank)
 		-- Make it easier on the user and offer a config save.
 		repeat
-			io.write("\nWould you like to save your configuration?")
-			io.write("\n>")
+			io.write("\nWould you like to save your configuration?\n")
+			io.write(">")
 			configAnswer = io.read()
 			if configAnswer == "n" then
 				SSCore.log("User completed config, and does not want to save to file.", 1, "Server Core")
@@ -329,8 +329,8 @@ function SSCore.configServer()
 	configCompleted = nil
 	
 	-- Tell user configuration is complete and we'll take it from here.
-	io.write("\nThank you for using (server)^2 Modification!")
-	io.write("\nThe modification will now continue to load.\n")
+	io.write("\nThank you for using (server)^2 Modification!\n")
+	io.write("The modification will now continue to load.\n")
 end
 
 -- Core Commands
