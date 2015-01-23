@@ -11,6 +11,8 @@ visit http://creativecommons.org/licenses/by-nd/4.0/.
 Written by server <serversquaredmain@gmail.com>, January 2015.
      ################################################################   ]]
 
+modLoadStart = getsvtick()				-- Because I'm curious.
+
 -- Main table for the Core.
 SSCore = {}
 SSCore.baseversionCore = "9"			-- Base version of the Core.
@@ -121,16 +123,16 @@ function SSCore.init()
 				onModuleUnload()
 				if addCommands ~= nil then
 					for commandName in pairs(addCommands) do
-						commands.commandName = nil
+						commands[commandName] = nil
 					end
 				end
 			elseif not unloadModule then
-				onModuleLoad()
 				if addCommands ~= nil then
 					for commandName,commandFunction in pairs(addCommands) do
-						commands.commandName = commandFunction
+						commands[commandName] = commandFunction
 					end
 				end
+				onModuleLoad()
 			end
 			onModuleLoad = nil
 			onModuleUnload = nil
@@ -380,9 +382,11 @@ commands = {
 
 
 function onInit()
-	SSCore.log("Initializing table of loaded Modules.", 1, "Server Core")
 	SSCore.loadedModules = {}		-- Table of Modules that we've loaded.
 	SSCore.init()
+	local modLoadTime = getsvtick() - modLoadStart
+	modLoadStart = nil
+	SSCore.log("Done. (" .. modLoadTime .. "ms)", 2, "Server Core")
 	SSCore.configServer()
 end
 
