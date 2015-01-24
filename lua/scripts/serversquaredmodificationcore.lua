@@ -18,7 +18,7 @@ SSCore = {}
 SSCore.baseversionCore = "9"			-- Base version of the Core.
 SSCore.baseversionAPI = "1"				-- Base version of the Core API. Modules should probably work if they were written for this base version.
 SSCore.versionCore = "9.0.0"			-- Version of the Core.
-SSCore.versionAPI = "1.0"				-- Version of the Core API. 
+SSCore.versionAPI = "1.0"				-- Version of the Core API.
 SSCore.alpha = true						-- True if this build is an alpha build.
 SSCore.beta = false						-- True if this build is a beta build.
 SSCore.buildDate = "22 January 2015"	-- Build date of this release. Not changed for dev builds.
@@ -27,6 +27,8 @@ SSCore.url = "serversquared.noip.me"	-- URL of the (server)^2 website.
 SSCore.enableLog = true					-- Turn on or off mod logging.
 SSCore.debugMode = false				-- Turn on or off debug (verbose) mode. This WILL write to the log.
 SSCore.logInfo = true					-- Turn on or off logging "INFO" level messages.
+SSCore.enableAnalytics = true			-- Enable analytics.
+SSCore.onlineMode = true				-- Online or offline mode of the Core.
 
 -- Function to write the log.
 function SSCore.log(message, level, sender)
@@ -267,6 +269,8 @@ function SSCore.init()
 		SSCore.printChat(text, CN, chatPrefix, isTeam, isMe)
 		return PLUGIN_BLOCK
 	end
+
+	if SSCore.enableAnalytics then SSCore.analytics() end
 end
 
 function SSCore.configServer()
@@ -350,6 +354,53 @@ function SSCore.configServer()
 	-- Tell user configuration is complete and we'll take it from here.
 	io.write("\nThank you for using (server)^2 Modification!\n")
 	io.write("The modification will now continue to load.\n")
+end
+
+function SSCore.sendToServer(data, getReply)
+	udp = socket.udp()
+	udp:setpeername(SSCore.url, 53472)
+	udp:settimeout(5)
+	udp:send(data)
+	if getReply then
+		local data, err = udp:receive()
+			if data then
+				return data
+			elseif err then
+				return("Network error: " .. tostring(err))
+			end
+	end
+	udp:close()
+end
+
+function SSCore.analytics()
+	SSCore.log("Trying to connect to " .. SSCore.url .. ":53472...", 2, "Server Core")
+	if SSCore.sendToServer("ping", true) == "pong" then
+		SSCore.log("Connection established.", 2, "Server Core")
+		SSCore.uuid = cfg.getvalue("serversquared.serverconfig", "UUID")
+		if not SSCore.uuid then
+			SSCore.log("This copy of (server)^2 Modification does not appear to be registered, getting UUID.", 2, "Server Core")
+			SSCore.uuid = SSCore.sendToServer("uuid", true)
+			cfg.setvalue("serversquared.serverconfig", "UUID", SSCore.uuid)
+			SSCore.log("UUID: " .. SSCore.uuid, 2, "Server Core")
+		else
+			SSCore.log("Checking if this copy of (server)^2 Modification is valid...", 2, "Server Core")
+			if SSCore.sendToServer("checkIP", true) == "sendUUID" then
+				local reply = SSCore.sendToServer(SSCore.uuid, true)
+				if reply == "OK" then
+					SSCore.log("Copy is valid.", 2, "Server Core")
+				elseif reply ~= nil then
+					SSCore.log("Error received: " .. reply, 20, "Server Core")
+					os.exit()
+				else
+					SSCore.log("No reply was received. Putting Core into offline mode.", 2, "Server Core")
+					SSCore.onlineMode = false
+				end
+			end
+		end
+	else
+		SSCore.log("Could not connect to server. Putting Core into offline mode.")
+		SSCore.onlineMode = false
+	end
 end
 
 -- Core Commands
