@@ -282,6 +282,13 @@ function SSCore.configServer()
 	SSCore.log("Getting Current Working Directory.", 1, "Server Core")
 	SSCore.ACPath = os.currentdir()
 	SSCore.log("We are here: " .. SSCore.ACPath, 0, "Server Core")
+	-- Determine if we're running on a Unix-like system
+	if package.config:sub(1,1) == "/" then
+		unix = true
+	else
+		unix = false
+	end
+	SSCore.log("We are " .. (unix and "not " or blank) .. "on a Windows NT-based system.", 0, "Server Core")
 	-- Should we load a configuration file?
 	repeat
 		io.write("Load from config file? Answer n if you don't have one. (y/n)\n")
