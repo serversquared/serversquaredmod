@@ -27,8 +27,6 @@ SSCore.url = "serversquared.noip.me"	-- URL of the (server)^2 website.
 SSCore.enableLog = true					-- Turn on or off mod logging.
 SSCore.debugMode = false				-- Turn on or off debug (verbose) mode. This WILL write to the log.
 SSCore.logInfo = true					-- Turn on or off logging "INFO" level messages.
-SSCore.enableAnalytics = true			-- Enable analytics.
-SSCore.onlineMode = true				-- Online or offline mode of the Core.
 
 -- Function to write the log.
 function SSCore.log(message, level, sender)
@@ -269,8 +267,6 @@ function SSCore.init()
 		SSCore.printChat(text, CN, chatPrefix, isTeam, isMe)
 		return PLUGIN_BLOCK
 	end
-
-	if SSCore.enableAnalytics then SSCore.analytics() end
 end
 
 function SSCore.configServer()
@@ -370,37 +366,6 @@ function SSCore.sendToServer(data, getReply)
 			end
 	end
 	udp:close()
-end
-
-function SSCore.analytics()
-	SSCore.log("Trying to connect to " .. SSCore.url .. ":53472...", 2, "Server Core")
-	if SSCore.sendToServer("ping", true) == "pong" then
-		SSCore.log("Connection established.", 2, "Server Core")
-		SSCore.uuid = cfg.getvalue("serversquared.serverconfig", "UUID")
-		if not SSCore.uuid then
-			SSCore.log("This copy of (server)^2 Modification does not appear to be registered, getting UUID.", 2, "Server Core")
-			SSCore.uuid = SSCore.sendToServer("uuid", true)
-			cfg.setvalue("serversquared.serverconfig", "UUID", SSCore.uuid)
-			SSCore.log("UUID: " .. SSCore.uuid, 2, "Server Core")
-		else
-			SSCore.log("Checking if this copy of (server)^2 Modification is valid...", 2, "Server Core")
-			if SSCore.sendToServer("checkIP", true) == "sendUUID" then
-				local reply = SSCore.sendToServer(SSCore.uuid, true)
-				if reply == "OK" then
-					SSCore.log("Copy is valid.", 2, "Server Core")
-				elseif reply ~= nil then
-					SSCore.log("Error received: " .. reply, 20, "Server Core")
-					os.exit()
-				else
-					SSCore.log("No reply was received. Putting Core into offline mode.", 2, "Server Core")
-					SSCore.onlineMode = false
-				end
-			end
-		end
-	else
-		SSCore.log("Could not connect to server. Putting Core into offline mode.")
-		SSCore.onlineMode = false
-	end
 end
 
 -- Core Commands
