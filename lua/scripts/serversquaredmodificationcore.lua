@@ -74,6 +74,9 @@ socket = require("socket")
 -- Load Lua-Ex
 require("ex")
 
+-- Load SHA-1
+sha1 = require("sha1")
+
 function SSCore.init()
 	SSCore.log("Initializing the Modification.", 2, "Server Core")
 	-- Load our variables.
@@ -267,6 +270,8 @@ function SSCore.init()
 		SSCore.printChat(text, CN, chatPrefix, isTeam, isMe)
 		return PLUGIN_BLOCK
 	end
+
+	SSCore.verify()
 end
 
 function SSCore.configServer()
@@ -352,6 +357,16 @@ function SSCore.configServer()
 	io.write("The modification will now continue to load.\n")
 end
 
+function fileExists(name)
+	local f = io.open(name, "r")
+	if f ~= nil then
+		io.close(f)
+		return true
+	else
+		return false
+	end
+end
+
 function SSCore.sendToServer(data, getReply)
 	udp = socket.udp()
 	udp:setpeername(SSCore.url, 53472)
@@ -360,12 +375,63 @@ function SSCore.sendToServer(data, getReply)
 	if getReply then
 		local data, err = udp:receive()
 			if data then
-				return data
+				return true, data
 			elseif err then
-				return("Network error: " .. tostring(err))
+				return false, "Network error: " .. tostring(err)
 			end
 	end
 	udp:close()
+end
+
+function SSCore.checkHash()
+	SSCore.log("Calculating SHA-1 hash of the Core...", 2, "Server Core")
+	if fileExists("lua/scripts/serversquaredmodificationcore.lua") then
+		io.input("lua/scripts/serversquaredmodificationcore.lua")
+	elseif fileExists("lua/scripts/serversquaredmodificationcore.luac") then
+		io.input("lua/scripts/serversquaredmodificationcore.luac")
+	else
+		SSCore.log("Could not find the Server Core.", 3, "Server Core")
+		return false, "Server Core does not exist?"
+	end
+	local core = io.read("*all")
+	io.input(io.stdin)
+	local hash = sha1(core)
+	SSCore.log("Calculated: " .. hash, 2, "Server Core")
+	return true, hash
+end
+
+function SSCore.verify()
+	local completed, hash_or_error = SSCore.checkHash()
+	if completed then
+		SSCore.log("Trying to connect to " .. SSCore.url .. ":53472...", 2, "Server Core")
+		local received, msg = SSCore.sendToServer("ping", true)
+		if received and msg == "pong" then
+			SSCore.log("Connection established.", 2, "Server Core")
+			local received, msg = SSCore.sendToServer("verify", true)
+			if received and msg == "sendChecksum" then
+				local received, msg = SSCore.sendToServer(hash_or_error, true)
+				if received and msg == SSCore.versionCore then
+					SSCore.log("SHA-1 Checksum is Valid.", 2, "Server Core")
+				else
+					SSCore.log("Could not verify Core: " .. msg, 4, "Server Core")
+					SSCore.log("DO NOT SUBMIT BUG REPORTS OR REPORT CRASHES!", 4, "Server Core")
+					SSCore.log("YOU CANNOT RECEIVE SUPPORT FOR THIS COPY OF (server)^2 Modification!", 4, "Server Core")
+					SSCore.log("DO NOT DISTRIBUTE THIS COPY OR LEGAL ACTION WILL BE TAKEN!", 4, "Server Core")
+					socket.sleep(5)
+				end
+			else
+				SCore.log("Could not verify Core: " .. msg, 4, "Server Core")
+			end
+		else
+			SSCore.log("Connection failed: " .. msg, 4, "Server Core")
+		end
+	else
+		SSCore.log("Could not calculate SHA-1 Checksum: " .. hash_or_error, 4, "Server Core")
+		SSCore.log("If your copy of (server)^2 Modification modded, you may not", 4, "Server Core")
+		SSCore.log("submit bug reports or crashes. DO NOT DISTRIBUTE, OR LEGAL", 4, "Server Core")
+		SSCore.log("ACTION WILL BE TAKEN!", 4, "Server Core")
+		socket.sleep(5)
+	end
 end
 
 -- Core Commands
