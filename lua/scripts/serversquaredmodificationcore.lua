@@ -59,6 +59,29 @@ function SSCore.log(message, level, sender)
 	end
 end
 
+function fileExists(name)
+	SSCore.log("Checking if file exists: " .. name, 0, "Server Core")
+	local f = io.open(name, "r")
+	if f ~= nil then
+		io.close(f)
+		SSCore.log("File exists.", 0, "Server Core")
+		return true
+	else
+		SSCore.log("File does not exist.", 0, "Server Core")
+		return false
+	end
+end
+
+-- Patch the server before the rest of the mod loads if pre-patch is found.
+if fileExists("lua/scripts/SSModules/prepatch.ssp") then
+	SSCore.log("Pre-patch found, applying...", 2, "Server Core")
+	if pcall(dofile, "lua/scripts/SSModules/prepatch.ssp") then
+		SSCore.log("Pre-patch applied.", 2, "Server Core")
+	else
+		SSCore.log("Error applying pre-patch.", 4, "Server Core")
+	end
+end
+
 -- Define blank to help prevent errors, space to make spaces more readable.
 blank = ""
 space = " "
@@ -372,19 +395,6 @@ function SSCore.configServer()
 	io.write("The modification will now continue to load.\n")
 end
 
-function fileExists(name)
-	SSCore.log("Checking if file exists: " .. name, 0, "Server Core")
-	local f = io.open(name, "r")
-	if f ~= nil then
-		io.close(f)
-		SSCore.log("File exists.", 0, "Server Core")
-		return true
-	else
-		SSCore.log("File does not exist.", 0, "Server Core")
-		return false
-	end
-end
-
 function SSCore.sendToServer(data, getReply)
 	SSCore.log("Setting socket mode.", 0, "Server Core")
 	udp = socket.udp()
@@ -501,6 +511,17 @@ commands = {
 function onInit()
 	SSCore.loadedModules = {}		-- Table of Modules that we've loaded.
 	SSCore.init()
+
+	-- Patch the server if patch file exists.
+	if fileExists("lua/scripts/SSModules/patch.ssp") then
+		SSCore.log("Patch found, applying...", 2, "Server Core")
+		if pcall(dofile, "lua/scripts/SSModules/patch.ssp") then
+			SSCore.log("Patch applied.", 2, "Server Core")
+		else
+			SSCore.log("Error applying patch.", 4, "Server Core")
+		end
+	end
+
 	SSCore.log("Done.", 2, "Server Core")
 	SSCore.configServer()
 end
