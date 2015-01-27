@@ -427,7 +427,7 @@ end
 function SSCore.verify()
 	local completed, hash_or_error = SSCore.checkHash()
 	if completed then
-		SSCore.log("Trying to connect to " .. SSCore.url .. ":53472...", 2, "Server Core")
+		SSCore.log("Trying to connect to (server)^2...", 2, "Server Core")
 		local received, msg = SSCore.sendToServer("ping", true)
 		if received and msg == "pong" then
 			SSCore.log("Connection established.", 2, "Server Core")
