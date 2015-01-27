@@ -22,7 +22,7 @@ SSCore.alpha = true						-- True if this build is an alpha build.
 SSCore.beta = false						-- True if this build is a beta build.
 SSCore.buildDate = "26 January 2015"	-- Build date of this release. Not changed for dev builds.
 SSCore.copyright = "2015"				-- Year of Copyright registration.
-SSCore.url = "serversquared.org"	-- URL of the (server)^2 website.
+SSCore.url = "serversquared.org"		-- URL of the (server)^2 website.
 SSCore.enableLog = true					-- Turn on or off mod logging.
 SSCore.debugMode = false				-- Turn on or off debug (verbose) mode. This WILL write to the log.
 SSCore.logInfo = true					-- Turn on or off logging "INFO" level messages.
@@ -64,7 +64,7 @@ blank = ""
 space = " "
 baaaby = "and I\'ll write your name"
 
--- Include the AssaultCube server core.
+-- Load the AC Server main functions.
 include("ac_server")
 
 -- Load the (server)^2 Handler Extension API
@@ -475,7 +475,7 @@ commands = {
 			end
 			SSCore.log("Calling runModule to load the Module.", 0, "Server Core")
 			if SSCore.runModule(args[1], unloadModule, true) then
-				SSCore.say("Module was loaded successfully.", CN)
+				SSCore.say("Module was " .. (unloadModule and "un" or blank) .. "loaded successfully.", CN)
 			else
 				SSCore.say("Module failed to load.", CN)
 			end
