@@ -11,7 +11,6 @@ visit http://creativecommons.org/licenses/by-nd/4.0/.
 Written by server <serversquaredmain@gmail.com>, January 2015.
      ################################################################   ]]
 
-modLoadStart = getsvtick()				-- Because I'm curious.
 
 -- Main table for the Core.
 SSCore = {}
@@ -488,9 +487,7 @@ commands = {
 function onInit()
 	SSCore.loadedModules = {}		-- Table of Modules that we've loaded.
 	SSCore.init()
-	local modLoadTime = getsvtick() - modLoadStart
-	modLoadStart = nil
-	SSCore.log("Done. (" .. modLoadTime .. "ms)", 2, "Server Core")
+	SSCore.log("Done.", 2, "Server Core")
 	SSCore.configServer()
 end
 
