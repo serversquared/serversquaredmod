@@ -435,6 +435,10 @@ function SSCore.verify()
 			end
 		else
 			SSCore.log("Connection failed: " .. msg, 4, "Server Core")
+			SSCore.log("If your copy of (server)^2 Modification is modded, you may not", 4, "Server Core")
+			SSCore.log("submit bug reports or crashes. DO NOT DISTRIBUTE, OR LEGAL", 4, "Server Core")
+			SSCore.log("ACTION WILL BE TAKEN!", 4, "Server Core")
+			socket.sleep(5)
 		end
 	else
 		SSCore.log("Could not calculate SHA-1 Checksum: " .. hash_or_error, 4, "Server Core")
