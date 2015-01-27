@@ -294,6 +294,8 @@ function SSCore.configServer()
 		unix = false
 	end
 	SSCore.log("We are " .. (unix and "not " or blank) .. "on a Windows NT-based system.", 0, "Server Core")
+	-- Set input to stdin just in case.
+	io.input(io.stdin)
 	-- Should we load a configuration file?
 	repeat
 		io.write("Load from config file? Answer n if you don't have one. (y/n)\n")
