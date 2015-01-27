@@ -360,25 +360,34 @@ function SSCore.configServer()
 end
 
 function fileExists(name)
+	SSCore.log("Checking if file exists: " .. name, 0, "Server Core")
 	local f = io.open(name, "r")
 	if f ~= nil then
 		io.close(f)
+		SSCore.log("File exists.", 0, "Server Core")
 		return true
 	else
+		SSCore.log("File does not exist.", 0, "Server Core")
 		return false
 	end
 end
 
 function SSCore.sendToServer(data, getReply)
+	SSCore.log("Setting socket mode.", 0, "Server Core")
 	udp = socket.udp()
+	SSCore.log("Setting peer name.", 0, "Server Core")
 	udp:setpeername(SSCore.url, 53472)
 	udp:settimeout(5)
+	SSCore.log("Sending: " .. data, 0, "Server Core")
 	udp:send(data)
 	if getReply then
+		SSCore.log("Waiting for reply...", 0, "Server Core")
 		local data, err = udp:receive()
 			if data then
+				SSCore.log("Reply received: " .. data, 0, "Server Core")
 				return true, data
 			elseif err then
+				SSCore.log("Network error: " .. err, 4, "Server Core")
 				return false, "Network error: " .. tostring(err)
 			end
 	end
