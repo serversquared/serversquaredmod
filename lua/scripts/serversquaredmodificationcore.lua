@@ -151,7 +151,9 @@ function SSCore.init()
 		SSCore.log("Loading Module" .. (unloadModule and " in unload mode" or blank) .. ": " .. moduleName, 2, "Server Core")
 		if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
 			if unloadModule then
-				onModuleUnload()
+				if onModuleUnload ~= nil then
+					onModuleUnload()
+				end
 				if addCommands ~= nil then
 					for commandName in pairs(addCommands) do
 						commands[commandName] = nil
@@ -163,7 +165,9 @@ function SSCore.init()
 						commands[commandName] = commandFunction
 					end
 				end
-				onModuleLoad()
+				if onModuleLoad ~= nil then
+					onModuleLoad()
+				end
 			end
 			onModuleLoad = nil
 			onModuleUnload = nil
