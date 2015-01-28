@@ -109,7 +109,6 @@ function SSCore.init()
 	SSCore.chatEcho = false					-- Global echo back coloured chat.
 	SSCore.colouredChat = true				-- Allow or disallow coloured chat.
 	SSCore.useAdminSystem = false			-- Use an external Administration system.
-	SSCore.useMuteSystem = false			-- Use an external player muting system.
 	SSCore.useChatFilter = false			-- Use an external chat filter system.
 	SSCore.log("Loading server colour configuration.", 1, "Server Core")
 	SSCore.serverColours = {}				-- Table of colours for the server.
@@ -227,7 +226,9 @@ function SSCore.init()
 		SSCore.log("Running chat extensions (if present).", 1, "Server Core")
 		for tableName, tableValue in pairs(handlerPlayerSayText) do
 			for handlerFunction in pairs(tableValue) do
-				handlerPlayerSayText[tableName][handlerFunction](CN, text, isTeam, isMe)
+				if handlerPlayerSayText[tableName][handlerFunction](CN, text, isTeam, isMe) == false then
+					return PLUGIN_BLOCK
+				end
 			end
 		end
 		-- Initialize chatPrefix.
@@ -256,19 +257,7 @@ function SSCore.init()
 				local chatPrefix = "@"
 			end
 		end
-		
-		-- Block muted clients if using our external Muting system.
-		if SSCore.useMuteSystem then
-			SSCore.log("Server is using modded mute system, if client is muted.", 0, "Server Core")
-			if isMuted[getip(CN)] then
-				SSCore.log("Client is muted, stopping chat processing.", 0, "Server Core")
-				blockChatReason = "Client is muted."
-				SSCore.log("Sending chat to mute system to take over chat processing.", 0, "Server Core")
-				blockChat(CN, text, isTeam, isMe, blockChatReason)
-				return PLUGIN_BLOCK
-			end
-		end
-		
+
 		-- Test for profanity if using a filter system.
 		if SSCore.useChatFilter then
 			SSCore.log("Server is using modded profanity filter, checking for bloked words.", 0, "Server Core")
