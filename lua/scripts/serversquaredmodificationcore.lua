@@ -410,6 +410,29 @@ function SSCore.sendToServer(data, getReply)
 	udp:close()
 end
 
+function SSCore.getFromServer(file)
+	SSCore.log("Setting socket mode.", 0, "Server Core")
+	local http = socket.http()
+	SSCore.log("Setting host.", 0, "Server Core")
+	local host = SSCore.url .. (file or blank)
+	SSCore.log("Testing connection.", 0, "Server Core")
+	local data, reply, head = http.request(SSCore.url .. "/test.html")
+	if reply == 200 and data == blank then
+		SSCore.log("Sending request: GET " .. file, 0, "Server Core")
+		local data, reply, head = http.request(host)
+		if reply == 200 and data then
+			SSCore.log("HTTP/1.1 " .. reply, 0, "Server Core")
+			return data, nil
+		else
+			SSCore.log("HTTP error: " .. tostring(reply), 4, "Server Core")
+			return nil, reply
+		end
+	else
+		SSCore.log("HTTP error: " .. tostring(reply), 4, "Server Core")
+		return nil, reply
+	end
+end
+
 function SSCore.checkHash()
 	SSCore.log("Calculating SHA-1 hash of the Core...", 2, "Server Core")
 	if fileExists("lua/scripts/serversquaredmodificationcore.lua") then
