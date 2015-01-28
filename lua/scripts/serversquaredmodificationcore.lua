@@ -88,19 +88,54 @@ space = " "
 baaaby = "and I\'ll write your name"
 
 -- Load the AC Server main functions.
-include("ac_server")
+function incac_server()
+	include("ac_server")
+end
+if not pcall(incac_server) then
+	SSCore.log("Dependency not found: ac_server", 20, "Server Core")
+	os.exit()
+end
+incac_server = nil
 
 -- Load the (server)^2 Handler Extension API
-include("SSHandlerExtensionAPI")
+function incSSHandlerExtensionAPI()
+	include("SSHandlerExtensionAPI")
+end
+if not pcall(incSSHandlerExtensionAPI) then
+	SSCore.log("Dependency not found: SSHandlerExtensionAPI", 20, "Server Core")
+	os.exit()
+end
+incSSHandlerExtensionAPI = nil
 
 -- Load LuaSocket
-socket = require("socket")
+function reqsocket()
+	socket = require("socket")
+end
+if not pcall(reqsocket) then
+	SSCore.log("Dependency not found: socket", 20, "Server Core")
+	os.exit()
+end
+reqsocket = nil
 
 -- Load Lua-Ex
-require("ex")
+function reqex()
+	require("ex")
+end
+if not pcall(reqex) then
+	SSCore.log("Dependency not found: ex", 20, "Server Core")
+	os.exit()
+end
+reqex = nil
 
 -- Load SHA-1
-sha1 = require("sha1")
+function reqsha1()
+	sha1 = require("sha1")
+end
+if not pcall(reqsha1) then
+	SSCore.log("Dependency not found: sha1", 20, "Server Core")
+	os.exit()
+end
+reqsha1 = nil
 
 function SSCore.init()
 	SSCore.log("Initializing the Modification.", 2, "Server Core")
