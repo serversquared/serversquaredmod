@@ -424,6 +424,8 @@ function SSCore.configServer()
 	-- Tell user configuration is complete and we'll take it from here.
 	io.write("\nThank you for using (server)^2 Modification!\n")
 	io.write("The modification will now continue to load.\n")
+
+	setservname(SSCore.serverName)
 end
 
 function SSCore.sendToServer(data, getReply)
