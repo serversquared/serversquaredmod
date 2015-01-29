@@ -523,10 +523,38 @@ function SSCore.verify()
 	end
 end
 
+-- Used in commands to determine permissions level.
+function SSCore.requirePerms(level, CN)
+	if isadmin(CN) then
+		SSCore.log("Client is logged in as AC admin, returning level 4.", 0, "Server Core")
+		return true, 4
+	end
+	if SSCore.useAdminSystem then
+	SSCore.log("AdminSystem is enabled, getting permissions from external system.", 0, "Server Core")
+		if getPerms ~= nil then
+			local hasPerms, hasLevel = getPerms(CN)
+			SSCore.log("Received: " .. (hasPerms and "No " or "Has") .. " permissions, level " .. tostring(hasLevel), 4, "Server Core")
+			if hasPerms then
+				if hasLevel >= level then
+					return true, hasLevel
+				else
+					return false, hasLevel
+				end
+			else
+				return false, nil
+			end
+		else
+			SSCore.log("AdminSystem is enabled but no Admin system was found, disabling.", 3, "Server Core")
+			SSCore.useAdminSystem = false
+		end
+	end
+end
+
 -- Core Commands
 commands = {
 	["!loadModule"] = {
 		function (CN, args)
+			if not SSCore.requirePerms(4, CN) then return end
 			SSCore.log("loadModule command started.", 1, "Server Core")
 			if args[2] ~= nil and  ("remove" or "unload") then
 				SSCore.log("Unload mode set.", 0, "Server Core")
@@ -552,6 +580,7 @@ commands = {
 
 	["!stop"] = {
 		function (CN, args)
+			if not SSCore.requirePerms(4, CN) then return end
 			SSCore.log("Shutting down the server (Sent from player: " .. getname(CN) .. ")...", 21, "Server Core")
 			os.exit()
 		end
