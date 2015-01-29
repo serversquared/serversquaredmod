@@ -371,7 +371,11 @@ function SSCore.configServer()
 		if configAnswer == "n" then
 			loadFromConfig = false
 		elseif configAnswer == blank or configAnswer == "y" then
-			loadFromConfig = true
+			if not cfg.exists("serversquared.serverconfig") then
+				io.write("Config file does not exist!\n")
+			else
+				loadFromConfig = true
+			end
 		end
 	until loadFromConfig ~= nil
 	-- Finish configuring the server if user answered no.
