@@ -453,7 +453,7 @@ function SSCore.getFromServer(file)
 	SSCore.log("Testing connection.", 0, "Server Core")
 	local data, reply, head = http.request(SSCore.url .. "/test.html")
 	if reply == 200 and data == blank then
-		SSCore.log("Sending request: GET " .. file, 0, "Server Core")
+		SSCore.log("Sending request: GET " .. (file or blank), 0, "Server Core")
 		local data, reply, head = http.request(host)
 		if reply == 200 and data then
 			SSCore.log("HTTP/1.1 " .. reply, 0, "Server Core")
