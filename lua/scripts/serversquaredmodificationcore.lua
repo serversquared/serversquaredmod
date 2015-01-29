@@ -16,7 +16,7 @@ Written by server <serversquaredmain@gmail.com>, January 2015.
 SSCore = {}
 SSCore.baseversionCore = "9"			-- Base version of the Core.
 SSCore.baseversionAPI = "1"				-- Base version of the Core API. Modules should probably work if they were written for this base version.
-SSCore.versionCore = "8.0.0"			-- Version of the Core.
+SSCore.versionCore = "9.0.0"			-- Version of the Core.
 SSCore.versionAPI = "1.0"				-- Version of the Core API.
 SSCore.alpha = false					-- True if this build is an alpha build.
 SSCore.beta = true						-- True if this build is a beta build.
