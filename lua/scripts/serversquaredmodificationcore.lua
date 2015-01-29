@@ -280,16 +280,17 @@ function SSCore.init()
 		
 		-- Use dynamic prefixes if using our external Administration system.
 		if SSCore.useAdminSystem then
+			local hasPerms, hasLevel = getPerms(CN)
 			SSCore.log("Server is using modded admin system, checking for permissions.", 0, "Server Core")
-			if modModerator[getname(CN)] then
+			if hasPerms and hasLevel == 2 then
 				SSCore.log("Client has Moderator permissions. Setting prefix to M.", 0, "Server Core")
 				local chatPrefix = "M"
 			end
-			if modAdministrator[getip(CN)] then
+			if hasPerms and hasLevel == 3 then
 				SSCore.log("Client has Administrator permissions. Setting prefix to A.", 0, "Server Core")
 				local chatPrefix = "A"
 			end
-			if modMaster[getip(CN)] then
+			if hasPerms and hasLevel == 4 then
 				SSCore.log("Client has Master permissions. Setting prefix to @.", 0, "Server Core")
 				local chatPrefix = "@"
 			end
