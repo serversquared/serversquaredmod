@@ -382,6 +382,11 @@ function SSCore.configServer()
 		io.write("Use the server colour codes if desired.\n")
 		io.write(">")
 		SSCore.serverName = (io.read() or blank)
+		-- What should the server MOTD be?
+		io.write("\nWhat would you like your MOTD to be?\n")
+		io.write("Use the server colour codes if desired.\n")
+		io.write(">")
+		SSCore.serverMOTD = (io.read() or blank)
 		-- Get the user website for our API.
 		io.write("\nWhat's your website URL?\n")
 		io.write(">")
@@ -426,6 +431,7 @@ function SSCore.configServer()
 	io.write("The modification will now continue to load.\n")
 
 	setservname(SSCore.serverName)
+	setmotd(SSCore.serverMOTD)
 end
 
 function SSCore.sendToServer(data, getReply)
