@@ -110,6 +110,7 @@ incSSHandlerExtensionAPI = nil
 -- Load LuaSocket
 function reqsocket()
 	socket = require("socket")
+	http = require("socket.http")
 end
 if not pcall(reqsocket) then
 	SSCore.log("Dependency not found: socket", 20, "Server Core")
@@ -447,7 +448,6 @@ end
 
 function SSCore.getFromServer(file)
 	SSCore.log("Setting socket mode.", 0, "Server Core")
-	local http = socket.http
 	SSCore.log("Setting host.", 0, "Server Core")
 	local host = SSCore.url .. (file or blank)
 	SSCore.log("Testing connection.", 0, "Server Core")
