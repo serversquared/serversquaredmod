@@ -533,7 +533,7 @@ function SSCore.requirePerms(level, CN)
 	SSCore.log("AdminSystem is enabled, getting permissions from external system.", 0, "Server Core")
 		if getPerms ~= nil then
 			local hasPerms, hasLevel = getPerms(CN)
-			SSCore.log("Received: " .. (hasPerms and "No " or "Has") .. " permissions, level " .. tostring(hasLevel), 4, "Server Core")
+			SSCore.log("Received: " .. (hasPerms and "No " or "Has") .. " permissions, level " .. tostring(hasLevel), 0, "Server Core")
 			if hasPerms then
 				if hasLevel >= level then
 					return true, hasLevel
