@@ -343,7 +343,7 @@ end
 function SSCore.configServer()
 	-- Present a friendly message for the server configuration interface.
 	SSCore.log("Writing configuration interface.", 1, "Server Core")
-	io.write("\nWelcome to (server)^2 Modification version " .. PLUGIN_VERSION .. "!\n")
+	io.write("\nWelcome to (server)^2 Modification version " .. SSCore.versionCore .. "!\n")
 	if SSCore.alpha or SSCore.beta then io.write("********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************\n") end
 	io.write("Please report any bugs to the issue tracker at:\n")
 	io.write("https://github.com/account3r2/serversquaredmod/issues\n")
