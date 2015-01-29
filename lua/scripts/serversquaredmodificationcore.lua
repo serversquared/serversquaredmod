@@ -425,7 +425,7 @@ end
 
 function SSCore.sendToServer(data, getReply)
 	SSCore.log("Setting socket mode.", 0, "Server Core")
-	local udp = socket.udp
+	local udp = socket.udp()
 	SSCore.log("Setting peer name.", 0, "Server Core")
 	udp:setpeername(SSCore.url, 53472)
 	udp:settimeout(5)
