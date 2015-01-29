@@ -3,6 +3,7 @@ This software is an AssaultCube modification written in Lua by Niko Geil, utiliz
 Install instructions:  
 * Install a fresh copy of Sveark's Lua API for AssaultCube.  
 * Delete the lua folder.  
+* Delete libmysqlclient.so.16  
 * Replace the deleted lua folder with the lua folder in this repository.  
 * Run the server wizard.  
   
