@@ -548,7 +548,7 @@ function SSCore.requirePerms(level, CN)
 		return true, 4
 	end
 	if SSCore.useAdminSystem then
-	SSCore.log("AdminSystem is enabled, getting permissions from external system.", 0, "Server Core")
+		SSCore.log("AdminSystem is enabled, getting permissions from external system.", 0, "Server Core")
 		if getPerms ~= nil then
 			local hasPerms, hasLevel = getPerms(CN)
 			SSCore.log("Received: " .. (hasPerms and "No " or "Has") .. " permissions, level " .. tostring(hasLevel), 0, "Server Core")
@@ -556,6 +556,7 @@ function SSCore.requirePerms(level, CN)
 				if hasLevel >= level then
 					return true, hasLevel
 				else
+					SSCore.say("\f3Insufficient permissions to use this command.", CN)
 					return false, hasLevel
 				end
 			else
@@ -566,6 +567,7 @@ function SSCore.requirePerms(level, CN)
 			SSCore.useAdminSystem = false
 		end
 	end
+	return false, nil
 end
 
 -- Core Commands
