@@ -324,12 +324,14 @@ function SSCore.init()
 		if commands[command] ~= nil then
 			SSCore.log("Chat is a command, processing from command list.", 1, "Server Core")
 			SSCore.log("[" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called: \"" .. text .. "\"", 22, "Server Core")
+			print("[" .. os.date("%X") .. "] [" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called: \"" .. text .. "\"")
 			local callback = commands[command][1]
 			callback(CN, args)
 			return PLUGIN_BLOCK
 		elseif string.byte(command,1) == string.byte("!",1) then
 			SSCore.log("Chat is not a command but in command notation. Stopping chat processing.", 1, "Server Core")
 			SSCore.log("[" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called non-command: \"" .. text .. "\"", 22, "Server Core")
+			print("[" .. os.date("%X") .. "] [" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called non-command: \"" .. text .. "\"")
 			SSCore.say("\f3(?) Not a command: " .. command, CN)
 			return PLUGIN_BLOCK		
 		end
@@ -567,6 +569,7 @@ function SSCore.requirePerms(level, CN)
 			SSCore.useAdminSystem = false
 		end
 	end
+	SSCore.say("\f3Insufficient permissions to use this command.", CN)
 	return false, nil
 end
 
