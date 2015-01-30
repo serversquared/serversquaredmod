@@ -323,12 +323,14 @@ function SSCore.init()
 		-- Check if the text is a command, execute if it is.
 		if commands[command] ~= nil then
 			SSCore.log("Chat is a command, processing from command list.", 1, "Server Core")
+			SSCore.log("[" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called: \"" .. text .. "\"", 22, "Server Core")
 			local callback = commands[command][1]
 			callback(CN, args)
 			return PLUGIN_BLOCK
 		elseif string.byte(command,1) == string.byte("!",1) then
 			SSCore.log("Chat is not a command but in command notation. Stopping chat processing.", 1, "Server Core")
-			print("Not a command: \"" .. command .. "\"")
+			SSCore.log("[" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called non-command: \"" .. text .. "\"", 22, "Server Core")
+			SSCore.say("\f3(?) Not a command: " .. command, CN)
 			return PLUGIN_BLOCK		
 		end
 		
@@ -602,7 +604,6 @@ commands = {
 		end
 	}
 }
-
 
 function onInit()
 	SSCore.loadedModules = {}		-- Table of Modules that we've loaded.
