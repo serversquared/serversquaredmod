@@ -1,5 +1,7 @@
 This software is an AssaultCube modification written in Lua by Niko Geil, utilizing the AssaultCube API written by Sveark. This mod is written for AssaultCube 1.1.0.4 using Sveark's Lua API version 1.5. It will most likely work on newer versions, however it is untested. Use alpha/beta versions at your own risk.  
   
+Please read the software license agreement carefully. By using all or any portion of the software, you are agreeing to be bound by all the terms and conditions of the agreement. If you do not agree to any terms of the agreement, do not use the software.  
+  
 Install instructions:  
 * Install a fresh copy of Sveark's Lua API for AssaultCube.  
 * Delete the lua folder.  

@@ -7,9 +7,11 @@ PLUGIN_VERSION = "9.0.0" -- In development!
              This work is licensed under the Creative Commons        
            Attribution-NoDerivatives 4.0 International License.      
                    To view a copy of this license, visit             
-              http://creativecommons.org/licenses/by-nd/4.0/         
-            Please ensure you understand the license before you      
-                       use or modify this software.                  
+              http://creativecommons.org/licenses/by-nd/4.0/          
+      Please read the software license agreement carefully. By using 
+	 all or any portion of the software, you are agreeing to be bound
+	 by all the terms and conditions of this agreement. If you do not
+	  agree to any terms of this agreement, do not use the software.
       Written by Niko Geil <server@serversquared.org>, January 2015. 
      ################################################################   ]]
 
@@ -368,6 +370,8 @@ function SSCore.configServer()
 	if SSCore.alpha or SSCore.beta then io.write("********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************\n") end
 	io.write("Please report any bugs to the issue tracker at:\n")
 	io.write("https://github.com/account3r2/serversquaredmod/issues\n")
+	io.write("By using all or any portion of the software, you are agreeing to be bound\n")
+	io.write("by all the terms and conditions of the license agreement.\n")
 	io.write("Let's configure your server.\n")
 	io.write("============================================================\n")
 	-- Get current working directory
