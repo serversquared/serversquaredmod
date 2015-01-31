@@ -3,7 +3,7 @@ PLUGIN_AUTHOR = "server"
 PLUGIN_VERSION = "9.0.0" -- In development!
 
 --[[ ################################################################
-               Copyright (C) server - All Rights Reserved.           
+              Copyright (C) Niko Geil - All Rights Reserved.         
              This work is licensed under the Creative Commons        
            Attribution-NoDerivatives 4.0 International License.      
                    To view a copy of this license, visit             
