@@ -345,6 +345,20 @@ function SSCore.init()
 	SSCore.verify()
 end
 
+--[[
+  ## Once upon a time, a young app named Core lived in
+  ## a very small house with his mother and father. One
+  ## time, during dinner, he asked, "Papa server, where
+  ## do applications come from?"
+  ## 
+  1# His father looked at his wife, then turned back to
+  ## young Core and said, "Core, we hope you never have
+  ## to go through what happens."
+  ## 
+  ## Core became very frightened, and didn't speak of
+  ## the matter again.
+  ]]
+
 function SSCore.configServer()
 	-- Present a friendly message for the server configuration interface.
 	SSCore.log("Writing configuration interface.", 1, "Server Core")
