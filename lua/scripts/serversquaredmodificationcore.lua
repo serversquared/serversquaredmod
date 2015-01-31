@@ -357,7 +357,7 @@ end
   ## 
   1# His father looked at his wife, then turned back to
   ## young Core and said, "Core, we hope you never have
-  ## to go through what happens."
+  ## to see or go through how they are made."
   ## 
   ## Core became very frightened, and didn't speak of
   ## the matter again.
