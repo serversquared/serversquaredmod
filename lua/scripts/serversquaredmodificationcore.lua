@@ -3,12 +3,14 @@ PLUGIN_AUTHOR = "server"
 PLUGIN_VERSION = "9.0.0" -- In development!
 
 --[[ ################################################################
-Copyright (C) server - All Rights Reserved.
-This work is licensed under the Creative
-Commons Attribution-NoDerivatives 4.0 International
-License. To view a copy of this license,
-visit http://creativecommons.org/licenses/by-nd/4.0/.
-Written by server <serversquaredmain@gmail.com>, January 2015.
+               Copyright (C) server - All Rights Reserved.           
+             This work is licensed under the Creative Commons        
+           Attribution-NoDerivatives 4.0 International License.      
+                   To view a copy of this license, visit             
+              http://creativecommons.org/licenses/by-nd/4.0/         
+            Please ensure you understand the license before you      
+                       use or modify this software.                  
+      Written by Niko Geil <server@serversquared.org>, January 2015. 
      ################################################################   ]]
 
 
