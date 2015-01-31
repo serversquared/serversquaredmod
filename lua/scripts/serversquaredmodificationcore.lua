@@ -87,6 +87,18 @@ if fileExists("lua/scripts/SSModules/prepatch.ssp") then
 	end
 end
 
+function SSCore.patchServer()
+	-- Patch the server if patch file exists.
+	if fileExists("lua/scripts/SSModules/patch.ssp") then
+		SSCore.log("Patch found, applying...", 2, "Server Core")
+		if pcall(dofile, "lua/scripts/SSModules/patch.ssp") then
+			SSCore.log("Patch applied.", 2, "Server Core")
+		else
+			SSCore.log("Error applying patch.", 4, "Server Core")
+		end
+	end
+end
+
 -- Define blank to help prevent errors, space to make spaces more readable.
 blank = ""
 space = " "
@@ -385,6 +397,10 @@ function SSCore.configServer()
 		unix = false
 	end
 	SSCore.log("We are " .. (unix and "not " or blank) .. "on a Windows NT-based system.", 0, "Server Core")
+
+	-- Automatically start the server if autostart file is present.
+	if SSCore.autoLoadServer() then return end
+
 	-- Set input to stdin just in case.
 	io.input(io.stdin)
 	-- Should we load a configuration file?
@@ -462,6 +478,30 @@ function SSCore.configServer()
 
 	setservname(SSCore.serverName)
 	setmotd(SSCore.serverMOTD)
+end
+
+function SSCore.autoLoadServer()
+	-- Automatically start the server if autoload file exists.
+	if fileExists("lua/scripts/SSModules/SSAutoStart.ssp") and cfg.exists("serversquared.serverconfig") then
+		SSCore.log("Loading configuration from file.", 1, "Server Core")
+		SSCore.serverName = cfg.getvalue("serversquared.serverconfig", "serverName")
+		SSCore.serverMOTD = cfg.getvalue("serversquared.serverconfig", "serverMOTD")
+		SSCore.serverWebsite = cfg.getvalue("serversquared.serverconfig", "serverWebsite")
+		SSCore.log("serverName = " .. SSCore.serverName, 0, "Server Core")
+		SSCore.log("serverWebsite = " .. SSCore.serverWebsite, 0, "Server Core")
+		SSCore.log("Autostart file found, applying settings.", 2, "Server Core")
+		setservname(SSCore.serverName)
+		setmotd(SSCore.serverMOTD)
+		if pcall(dofile, "lua/scripts/SSModules/SSAutoStart.ssp") then
+			SSCore.log("Settings applied.", 2, "Server Core")
+			return true
+		else
+			SSCore.log("Error applying autostart settings.", 4, "Server Core")
+			return false
+		end
+	else
+		return false
+	end
 end
 
 function SSCore.sendToServer(data, getReply)
@@ -635,14 +675,7 @@ function onInit()
 	SSCore.init()
 
 	-- Patch the server if patch file exists.
-	if fileExists("lua/scripts/SSModules/patch.ssp") then
-		SSCore.log("Patch found, applying...", 2, "Server Core")
-		if pcall(dofile, "lua/scripts/SSModules/patch.ssp") then
-			SSCore.log("Patch applied.", 2, "Server Core")
-		else
-			SSCore.log("Error applying patch.", 4, "Server Core")
-		end
-	end
+	SSCore.patchServer()
 
 	SSCore.log("Done.", 2, "Server Core")
 	SSCore.configServer()
