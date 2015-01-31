@@ -1,6 +1,9 @@
 -- ## (server)^2 Dependency ## --
 -- This file is intended to be executed by the (server)^2 Modification Core, and should NOT be run separately.
 
+-- (server)^2 Handler Extension API
+-- v1.0.0
+
 -- Initialize Handler function tables.
 handlerPlayerSpawn = {}
 handlerPlayerConnect = {}
