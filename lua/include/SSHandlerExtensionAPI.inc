@@ -343,6 +343,20 @@ function onPlayerDamageAfter(actorCN, targetCN, damage, actorGun, isGib)
 	end
 end
 
+--[[
+  ## That night, Core could not sleep. He was crying on
+  ## his bed, thinking about what his father had not
+  ## said. He wondered what had to happen for an app to
+  ## be created, and why his father had not told him.
+  ##
+  2# "Son?" his father asked as he entered Core's room.
+  ##
+  ## "Yes, papa Core?" he replied, trying not cry.
+  ##
+  ## "If you really want to know, I will tell you how
+  ## applications are made. But only if you are ready."
+  ]]
+
 function onPlayerTeamChangeAfter(CN, oldTeam, reason)
 	for tableName, tableValue in pairs(handlerPlayerTeamChangeAfter) do
 		for handlerFunction in pairs(tableValue) do
