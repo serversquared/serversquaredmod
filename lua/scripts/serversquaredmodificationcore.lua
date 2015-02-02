@@ -384,6 +384,7 @@ function SSCore.configServer()
 	io.write("https://github.com/account3r2/serversquaredmod/issues\n")
 	io.write("By using all or any portion of the software, you are agreeing to be bound\n")
 	io.write("by all the terms and conditions of the license agreement.\n")
+	io.write("See the license file for more information.\n")
 	io.write("Let's configure your server.\n")
 	io.write("============================================================\n")
 	-- Get current working directory
