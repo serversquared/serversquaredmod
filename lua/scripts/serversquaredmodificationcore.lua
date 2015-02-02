@@ -5,13 +5,13 @@ PLUGIN_VERSION = "9.0.0" -- In development!
 --[[ ################################################################
               Copyright (C) Niko Geil - All Rights Reserved.         
              This work is licensed under the Creative Commons        
-           Attribution-NoDerivatives 4.0 International License.      
-                   To view a copy of this license, visit             
-              http://creativecommons.org/licenses/by-nd/4.0/          
+         Attribution-NonCommercial-NoDerivatives 4.0 International   
+              License. To view a copy of this license, visit         
+             http://creativecommons.org/licenses/by-nc-nd/4.0/       
       Please read the software license agreement carefully. By using 
 	 all or any portion of the software, you are agreeing to be bound
 	 by all the terms and conditions of this agreement. If you do not
-	  agree to any terms of this agreement, do not use the software.
+	  agree to any terms of this agreement, do not use the software. 
       Written by Niko Geil <server@serversquared.org>, January 2015. 
      ################################################################   ]]
 
