@@ -105,6 +105,8 @@ blank = ""
 space = " "
 baaaby = "and I\'ll write your name"
 
+-- $$$ I feel like the below functions to load up dependencies sucks.
+
 -- Load the AC Server main functions.
 function incac_server()
 	include("ac_server")
@@ -155,6 +157,116 @@ if not pcall(reqsha1) then
 	os.exit()
 end
 reqsha1 = nil
+
+-- $$$ Yup, that sucked.
+
+-- Send data to (server)^2.
+-- Not the most efficient code if you need to send multiple times, as it closes the connection each time you call the function.
+function SSCore.sendToServer(data, getReply)
+	SSCore.log("Setting socket mode.", 0, "Server Core")
+	local udp = socket.udp()
+	SSCore.log("Setting peer name.", 0, "Server Core")
+	udp:setpeername(SSCore.url, 53472)
+	udp:settimeout(5)
+	SSCore.log("Sending: " .. data, 0, "Server Core")
+	udp:send(data)
+	if getReply then
+		SSCore.log("Waiting for reply...", 0, "Server Core")
+		local data, err = udp:receive()
+			if data then
+				SSCore.log("Reply received: " .. data, 0, "Server Core")
+				return true, data
+			elseif err then
+				SSCore.log("Network error: " .. err, 4, "Server Core")
+				return false, "Network error: " .. tostring(err)
+			end
+	end
+	udp:close()
+end
+
+-- Send an HTTP GET request to (server)^2 and return the received data.
+function SSCore.getFromServer(file)
+	SSCore.log("Setting socket mode.", 0, "Server Core")
+	SSCore.log("Setting host.", 0, "Server Core")
+	local host = SSCore.http .. (file or blank)
+	SSCore.log("Testing connection.", 0, "Server Core")
+	local data, reply, head = http.request(SSCore.http .. "/test.html")
+	if reply == 200 and data == blank then
+		SSCore.log("Sending request: GET " .. (file or blank), 0, "Server Core")
+		local data, reply, head = http.request(host)
+		if reply == 200 and data then
+			SSCore.log("HTTP/1.1 " .. reply, 0, "Server Core")
+			return data, nil
+		else
+			SSCore.log("HTTP error: " .. tostring(reply), 4, "Server Core")
+			return nil, reply
+		end
+	else
+		SSCore.log("HTTP error: " .. tostring(reply), 4, "Server Core")
+		return nil, reply
+	end
+end
+
+-- Calculate myself.
+-- Returns true, hash if completed successfully. False if not.
+function SSCore.checkHash()
+	SSCore.log("Calculating SHA-1 hash of the Core...", 2, "Server Core")
+	if fileExists("lua/scripts/serversquaredmodificationcore.lua") then
+		io.input("lua/scripts/serversquaredmodificationcore.lua")
+	elseif fileExists("lua/scripts/serversquaredmodificationcore.luac") then
+		io.input("lua/scripts/serversquaredmodificationcore.luac")
+	else
+		SSCore.log("Could not find the Server Core.", 3, "Server Core")
+		return false, "Server Core does not exist?"
+	end
+	local core = io.read("*all")
+	io.input(io.stdin)
+	local hash = sha1(core)
+	SSCore.log("Calculated: " .. hash, 2, "Server Core")
+	return true, hash
+end
+
+-- Check myself with papa server to make sure no one's harmed me.
+-- We're only using UPD because I can't figure out how to use flipping TCP.
+-- If you have a sucky Internet connection this might fail.
+-- If you have NO Internet connection, I will crash. No idea why.
+function SSCore.verify()
+	local completed, hash_or_error = SSCore.checkHash()
+	if completed then
+		SSCore.log("Trying to connect to (server)^2...", 2, "Server Core")
+		local received, msg = SSCore.sendToServer("ping", true)
+		if received and msg == "pong" then
+			SSCore.log("Connection established.", 2, "Server Core")
+			local received, msg = SSCore.sendToServer("verify", true)
+			if received and msg == "sendChecksum" then
+				local received, msg = SSCore.sendToServer(hash_or_error, true)
+				if received and msg == SSCore.versionCore then
+					SSCore.log("SHA-1 Checksum is Valid.", 2, "Server Core")
+				else
+					SSCore.log("Could not verify Core: " .. msg, 4, "Server Core")
+					SSCore.log("DO NOT SUBMIT BUG REPORTS OR REPORT CRASHES!", 4, "Server Core")
+					SSCore.log("YOU CANNOT RECEIVE SUPPORT FOR THIS COPY OF (server)^2 Modification!", 4, "Server Core")
+					SSCore.log("DO NOT DISTRIBUTE THIS COPY OR LEGAL ACTION WILL BE TAKEN!", 4, "Server Core")
+					socket.sleep(5)
+				end
+			else
+				SCore.log("Could not verify Core: " .. msg, 4, "Server Core")
+			end
+		else
+			SSCore.log("Connection failed: " .. msg, 4, "Server Core")
+			SSCore.log("If your copy of (server)^2 Modification is modded, you may not", 4, "Server Core")
+			SSCore.log("submit bug reports or crashes. DO NOT DISTRIBUTE, OR LEGAL", 4, "Server Core")
+			SSCore.log("ACTION WILL BE TAKEN!", 4, "Server Core")
+			socket.sleep(5)
+		end
+	else
+		SSCore.log("Could not calculate SHA-1 Checksum: " .. hash_or_error, 4, "Server Core")
+		SSCore.log("If your copy of (server)^2 Modification is modded, you may not", 4, "Server Core")
+		SSCore.log("submit bug reports or crashes. DO NOT DISTRIBUTE, OR LEGAL", 4, "Server Core")
+		SSCore.log("ACTION WILL BE TAKEN!", 4, "Server Core")
+		socket.sleep(5)
+	end
+end
 
 function SSCore.init()
 	SSCore.log("Initializing the Modification.", 2, "Server Core")
@@ -321,105 +433,6 @@ function SSCore.autoLoadServer()
 	end
 end
 
-function SSCore.sendToServer(data, getReply)
-	SSCore.log("Setting socket mode.", 0, "Server Core")
-	local udp = socket.udp()
-	SSCore.log("Setting peer name.", 0, "Server Core")
-	udp:setpeername(SSCore.url, 53472)
-	udp:settimeout(5)
-	SSCore.log("Sending: " .. data, 0, "Server Core")
-	udp:send(data)
-	if getReply then
-		SSCore.log("Waiting for reply...", 0, "Server Core")
-		local data, err = udp:receive()
-			if data then
-				SSCore.log("Reply received: " .. data, 0, "Server Core")
-				return true, data
-			elseif err then
-				SSCore.log("Network error: " .. err, 4, "Server Core")
-				return false, "Network error: " .. tostring(err)
-			end
-	end
-	udp:close()
-end
-
-function SSCore.getFromServer(file)
-	SSCore.log("Setting socket mode.", 0, "Server Core")
-	SSCore.log("Setting host.", 0, "Server Core")
-	local host = SSCore.http .. (file or blank)
-	SSCore.log("Testing connection.", 0, "Server Core")
-	local data, reply, head = http.request(SSCore.http .. "/test.html")
-	if reply == 200 and data == blank then
-		SSCore.log("Sending request: GET " .. (file or blank), 0, "Server Core")
-		local data, reply, head = http.request(host)
-		if reply == 200 and data then
-			SSCore.log("HTTP/1.1 " .. reply, 0, "Server Core")
-			return data, nil
-		else
-			SSCore.log("HTTP error: " .. tostring(reply), 4, "Server Core")
-			return nil, reply
-		end
-	else
-		SSCore.log("HTTP error: " .. tostring(reply), 4, "Server Core")
-		return nil, reply
-	end
-end
-
-function SSCore.checkHash()
-	SSCore.log("Calculating SHA-1 hash of the Core...", 2, "Server Core")
-	if fileExists("lua/scripts/serversquaredmodificationcore.lua") then
-		io.input("lua/scripts/serversquaredmodificationcore.lua")
-	elseif fileExists("lua/scripts/serversquaredmodificationcore.luac") then
-		io.input("lua/scripts/serversquaredmodificationcore.luac")
-	else
-		SSCore.log("Could not find the Server Core.", 3, "Server Core")
-		return false, "Server Core does not exist?"
-	end
-	local core = io.read("*all")
-	io.input(io.stdin)
-	local hash = sha1(core)
-	SSCore.log("Calculated: " .. hash, 2, "Server Core")
-	return true, hash
-end
-
-function SSCore.verify()
-	local completed, hash_or_error = SSCore.checkHash()
-	if completed then
-		SSCore.log("Trying to connect to (server)^2...", 2, "Server Core")
-		local received, msg = SSCore.sendToServer("ping", true)
-		if received and msg == "pong" then
-			SSCore.log("Connection established.", 2, "Server Core")
-			local received, msg = SSCore.sendToServer("verify", true)
-			if received and msg == "sendChecksum" then
-				local received, msg = SSCore.sendToServer(hash_or_error, true)
-				if received and msg == SSCore.versionCore then
-					SSCore.log("SHA-1 Checksum is Valid.", 2, "Server Core")
-				else
-					SSCore.log("Could not verify Core: " .. msg, 4, "Server Core")
-					SSCore.log("DO NOT SUBMIT BUG REPORTS OR REPORT CRASHES!", 4, "Server Core")
-					SSCore.log("YOU CANNOT RECEIVE SUPPORT FOR THIS COPY OF (server)^2 Modification!", 4, "Server Core")
-					SSCore.log("DO NOT DISTRIBUTE THIS COPY OR LEGAL ACTION WILL BE TAKEN!", 4, "Server Core")
-					socket.sleep(5)
-				end
-			else
-				SCore.log("Could not verify Core: " .. msg, 4, "Server Core")
-			end
-		else
-			SSCore.log("Connection failed: " .. msg, 4, "Server Core")
-			SSCore.log("If your copy of (server)^2 Modification is modded, you may not", 4, "Server Core")
-			SSCore.log("submit bug reports or crashes. DO NOT DISTRIBUTE, OR LEGAL", 4, "Server Core")
-			SSCore.log("ACTION WILL BE TAKEN!", 4, "Server Core")
-			socket.sleep(5)
-		end
-	else
-		SSCore.log("Could not calculate SHA-1 Checksum: " .. hash_or_error, 4, "Server Core")
-		SSCore.log("If your copy of (server)^2 Modification is modded, you may not", 4, "Server Core")
-		SSCore.log("submit bug reports or crashes. DO NOT DISTRIBUTE, OR LEGAL", 4, "Server Core")
-		SSCore.log("ACTION WILL BE TAKEN!", 4, "Server Core")
-		socket.sleep(5)
-	end
-end
-
 -- Make it easier to talk to the players.
 function SSCore.say(text, toCN, excludeCN)
 	SSCore.log("Starting say function.", 1, "Server Core")
@@ -471,6 +484,7 @@ function SSCore.requirePerms(level, CN)
 end
 
 -- Run a Module.
+-- I'm really proud of this one <3
 function SSCore.runModule(moduleName, unloadModule, booleanMode)
 	SSCore.log("Starting runModule function.", 1, "Server Core")
 	local loadStartTick = getsvtick()
@@ -700,3 +714,4 @@ function onDestroy()
 
 	io.write("Thank you for using (server)^2 Modification.\n")
 end
+-- I love you, Caitlyn (:
