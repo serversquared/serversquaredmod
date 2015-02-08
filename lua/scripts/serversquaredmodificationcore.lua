@@ -15,6 +15,7 @@ PLUGIN_VERSION = "9.0.0" -- In development!
       Written by Niko Geil <server@serversquared.org>, January 2015. 
      ################################################################   ]]
 
+-- $ symbol will be used to mark problems, bugs, things that should be changed, etc.
 
 -- Main table for the Core.
 SSCore = {}
@@ -172,191 +173,6 @@ function SSCore.init()
 
 	-- Initialize handlerPlayerSayText
 	handlerPlayerSayText = {}
-
-	-- Core functions.
-	-- Make it easier to talk to the players.
-	function SSCore.say(text, toCN, excludeCN)
-		SSCore.log("Starting say function.", 1, "Server Core")
-		if toCN == nil then
-			SSCore.log("Recipient was not given, making the message global.", 0, "Server Core")
-			toCN = -1
-		end
-		if excludeCN == nil then
-			SSCore.log("Excluded client was not given, making the message global.", 0, "Server Core")
-			excludeCN = -1
-		end
-		if text == nil then
-			SSCore.log("Text was not given, sending a blank message.", 0, "Server Core")
-			text = blank
-		end
-		SSCore.log("Printing to " .. toCN .. " excluding " .. excludeCN, 1, "Server Core")
-		clientprint(toCN, text, excludeCN)
-	end
-
-	-- Run a Module.
-	function SSCore.runModule(moduleName, unloadModule, booleanMode)
-		SSCore.log("Starting runModule function.", 1, "Server Core")
-		local loadStartTick = getsvtick()
-		if unloadModule == nil or moduleName == nil then
-			SSCore.log("runModule was called using incorrect syntax, stopping.", 3, "Server Core")
-		end
-		SSCore.log("Loading Module" .. (unloadModule and " in unload mode" or blank) .. ": " .. moduleName, 2, "Server Core")
-		if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
-			if unloadModule then
-				if onModuleUnload ~= nil then
-					onModuleUnload()
-				end
-				if addCommands ~= nil then
-					for commandName in pairs(addCommands) do
-						commands[commandName] = nil
-					end
-				end
-			elseif not unloadModule then
-				if addCommands ~= nil then
-					for commandName,commandFunction in pairs(addCommands) do
-						commands[commandName] = commandFunction
-					end
-				end
-				if onModuleLoad ~= nil then
-					onModuleLoad()
-				end
-			end
-			onModuleLoad = nil
-			onModuleUnload = nil
-			local loadTime = (getsvtick() - loadStartTick)
-			SSCore.log("Successfully loaded Module in " .. loadTime .. "ms.", 2, "Server Core")
-			if unloadModule then
-				SSCore.loadedModules[moduleName] = nil
-				SSCore.log("Removed module from loadedModules table.", 0, "Server Core")
-			else
-				SSCore.loadedModules[moduleName] = true
-				SSCore.checkModule(moduleName, moduleInfo)
-				SSCore.log("Added Module to loadedModules table.", 0, "Server Core")
-			end
-			if booleanMode ~= nil and booleanMode then
-				return true
-			end
-		else
-			SSCore.log("Error loading Module.", 4, "Server Core")
-			if booleanMode ~= nil and booleanMode then
-				return false
-			end
-		end
-	end
-
-	-- Check if a Module is built for our API base version.
-	function SSCore.checkModule(moduleName, moduleInfo)
-		if moduleInfo ~= nil then
-			if moduleInfo.usesbaseAPI ~= nil and moduleInfo.usesbaseAPI < SSCore.baseversionAPI then
-				SSCore.log("Module " .. moduleName .. " is built for old API version " .. moduleInfo.usesAPI .. ". It may have compatibility issues.", 3, "Server Core")
-			end
-			moduleInfo = nil
-		else
-			SSCore.log("Module " .. moduleName .. " does not have a config. This may cause issues if the API version is outdated.", 3, "Server Core") 
-		end
-	end
-
-	-- Chat printing
-	function SSCore.printChat(text, CN, chatPrefix, isTeam, isMe)
-		print("[" .. os.date("%X") .. "] [" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"")
-		SSCore.log("[" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"", 22, "Server Core")
-		if isTeam then
-			for x=0,maxclient(),1 do
-				if getteam(CN) == getteam(x) and CN ~= x then
-					SSCore.say(SSCore.serverColours.primary .. CN .. "\f3" .. chatPrefix .. SSCore.serverColours.secondary .. "#" .. (isMe and SSCore.serverColours.chatTeam or "\f5") .. getname(CN) .. SSCore.serverColours.chatTeam .. (isMe and space or ": ") .. text, x, (SSCore.chatEcho and -1 or CN))
-				end
-			end
-		else
-			SSCore.say(SSCore.serverColours.primary .. CN .. "\f3" .. chatPrefix .. SSCore.serverColours.secondary .. "#" .. (isMe and SSCore.serverColours.chatPublic or "\f5") .. getname(CN) .. SSCore.serverColours.chatPublic .. (isMe and space or ": ") .. text, -1, (SSCore.chatEcho and -1 or CN))
-		end
-	end
-
-	-- Chat decoding and processing. Chat and commands will probably break if this is changed by a Module, unless they know what they're doing.
-	function onPlayerSayText(CN, text, isTeam, isMe)
-		SSCore.log("Starting processing client chat.", 1, "Server Core")
-		
-		-- Run chat extensions (if present)
-		SSCore.log("Running chat extensions (if present).", 1, "Server Core")
-		for tableName, tableValue in pairs(handlerPlayerSayText) do
-			for handlerFunction in pairs(tableValue) do
-				if handlerPlayerSayText[tableName][handlerFunction](CN, text, isTeam, isMe) == false then
-					return PLUGIN_BLOCK
-				end
-			end
-		end
-		-- Initialize chatPrefix.
-		SSCore.log("Setting chat prefix to blank.", 0, "Server Core")
-		local chatPrefix = blank
-		
-		-- Make a Server Master prefix if using default admin system.
-		if isadmin(CN) then
-			SSCore.log("Client is logged in as the server administrator, not using modded system. Setting prefix to @.", 0, "Server Core")
-			local chatPrefix = "@"
-		end
-		
-		-- Use dynamic prefixes if using our external Administration system.
-		if SSCore.useAdminSystem then
-			local hasPerms, hasLevel = getPerms(CN)
-			SSCore.log("Server is using modded admin system, checking for permissions.", 0, "Server Core")
-			if hasPerms and hasLevel == 2 then
-				SSCore.log("Client has Moderator permissions. Setting prefix to M.", 0, "Server Core")
-				local chatPrefix = "M"
-			end
-			if hasPerms and hasLevel == 3 then
-				SSCore.log("Client has Administrator permissions. Setting prefix to A.", 0, "Server Core")
-				local chatPrefix = "A"
-			end
-			if hasPerms and hasLevel == 4 then
-				SSCore.log("Client has Master permissions. Setting prefix to @.", 0, "Server Core")
-				local chatPrefix = "@"
-			end
-		end
-
-		-- Test for profanity if using a filter system.
-		if SSCore.useChatFilter then
-			SSCore.log("Server is using modded profanity filter, checking for bloked words.", 0, "Server Core")
-			if not chatIsClean(text) then
-				SSCore.log("Chat contains a blocked word, stopping chat processing.", 0, "Server Core")
-				blockChatReason = "Chat contains profanity."
-				SSCore.log("Sending chat to filter system to take over chat processing.", 0, "Server Core")
-				blockChat(CN, text, isTeam, isMe, blockChatReason)
-				return PLUGIN_BLOCK
-			end
-		end
-		
-		-- Convert colour codes if enabled on our server.
-		if SSCore.colouredChat then
-			SSCore.log("Server has coloured text enabled, reprocessing and converting colour codes.", 0, "Server Core")
-			local text = string.gsub(text, "\\f", "\f")
-		end
-		
-		-- Split the text into an array.
-		SSCore.log("Converting the sent chat into a table for command processing.", 0, "Server Core")
-		local array = split(text, " ")
-		-- Separate the command from the arguments.
-		SSCore.log("Separating the command (first table entry) from the arguments.", 0, "Server Core")
-		local command, args = array[1], slice(array, 2)
-		-- Check if the text is a command, execute if it is.
-		if commands[command] ~= nil then
-			SSCore.log("Chat is a command, processing from command list.", 1, "Server Core")
-			SSCore.log("[" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called: \"" .. text .. "\"", 22, "Server Core")
-			print("[" .. os.date("%X") .. "] [" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called: \"" .. text .. "\"")
-			local callback = commands[command][1]
-			callback(CN, args)
-			return PLUGIN_BLOCK
-		elseif string.byte(command,1) == string.byte("!",1) then
-			SSCore.log("Chat is not a command but in command notation. Stopping chat processing.", 1, "Server Core")
-			SSCore.log("[" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called non-command: \"" .. text .. "\"", 22, "Server Core")
-			print("[" .. os.date("%X") .. "] [" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called non-command: \"" .. text .. "\"")
-			SSCore.say("\f3(?) Not a command: " .. command, CN)
-			return PLUGIN_BLOCK		
-		end
-		
-		-- Chat function
-		SSCore.log("Initial chat processing complete, sending to printChat to determine teams and /me.", 1, "Server Core")
-		SSCore.printChat(text, CN, chatPrefix, isTeam, isMe)
-		return PLUGIN_BLOCK
-	end
 
 	SSCore.verify()
 end
@@ -604,7 +420,27 @@ function SSCore.verify()
 	end
 end
 
+-- Make it easier to talk to the players.
+function SSCore.say(text, toCN, excludeCN)
+	SSCore.log("Starting say function.", 1, "Server Core")
+	if toCN == nil then
+		SSCore.log("Recipient was not given, making the message global.", 0, "Server Core")
+		toCN = -1
+	end
+	if excludeCN == nil then
+		SSCore.log("Excluded client was not given, making the message global.", 0, "Server Core")
+		excludeCN = -1
+	end
+	if text == nil then
+		SSCore.log("Text was not given, sending a blank message.", 0, "Server Core")
+		text = blank
+	end
+	SSCore.log("Printing to " .. toCN .. " excluding " .. excludeCN, 1, "Server Core")
+	clientprint(toCN, text, excludeCN)
+end
+
 -- Used in commands to determine permissions level.
+-- Permission levels: 0 Unregistered, 1 User, 2 Moderator, 3 Admin, 4 Server Master.
 function SSCore.requirePerms(level, CN)
 	if isadmin(CN) then
 		SSCore.log("Client is logged in as AC admin, returning level 4.", 0, "Server Core")
@@ -623,7 +459,7 @@ function SSCore.requirePerms(level, CN)
 					return false, hasLevel
 				end
 			else
-				return false, nil
+				return false, nil		-- $$$$$ This does not make sense.
 			end
 		else
 			SSCore.log("AdminSystem is enabled but no Admin system was found, disabling.", 3, "Server Core")
@@ -632,6 +468,176 @@ function SSCore.requirePerms(level, CN)
 	end
 	SSCore.say("\f3Insufficient permissions to use this command.", CN)
 	return false, nil
+end
+
+-- Run a Module.
+function SSCore.runModule(moduleName, unloadModule, booleanMode)
+	SSCore.log("Starting runModule function.", 1, "Server Core")
+	local loadStartTick = getsvtick()
+	if unloadModule == nil or moduleName == nil then
+		SSCore.log("runModule was called using incorrect syntax, stopping.", 3, "Server Core")
+	end
+	SSCore.log("Loading Module" .. (unloadModule and " in unload mode" or blank) .. ": " .. moduleName, 2, "Server Core")
+	if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
+		if unloadModule then
+			if onModuleUnload ~= nil then
+				onModuleUnload()
+			end
+			if addCommands ~= nil then
+				for commandName in pairs(addCommands) do
+					commands[commandName] = nil
+				end
+			end
+		elseif not unloadModule then
+			if addCommands ~= nil then
+				for commandName,commandFunction in pairs(addCommands) do
+					commands[commandName] = commandFunction
+				end
+			end
+			if onModuleLoad ~= nil then
+				onModuleLoad()
+			end
+		end
+		onModuleLoad = nil
+		onModuleUnload = nil
+		local loadTime = (getsvtick() - loadStartTick)
+		SSCore.log("Successfully loaded Module in " .. loadTime .. "ms.", 2, "Server Core")
+		if unloadModule then
+			SSCore.loadedModules[moduleName] = nil
+			SSCore.log("Removed module from loadedModules table.", 0, "Server Core")
+		else
+			SSCore.loadedModules[moduleName] = true
+			SSCore.checkModule(moduleName, moduleInfo)
+			SSCore.log("Added Module to loadedModules table.", 0, "Server Core")
+		end
+		if booleanMode ~= nil and booleanMode then
+			return true
+		end
+	else
+		SSCore.log("Error loading Module.", 4, "Server Core")
+		if booleanMode ~= nil and booleanMode then
+			return false
+		end
+	end
+end
+
+-- Check if a Module is built for our API base version.
+function SSCore.checkModule(moduleName, moduleInfo)
+	if moduleInfo ~= nil then
+		if moduleInfo.usesbaseAPI ~= nil and moduleInfo.usesbaseAPI < SSCore.baseversionAPI then
+			SSCore.log("Module " .. moduleName .. " is built for old API version " .. moduleInfo.usesAPI .. ". It may have compatibility issues.", 3, "Server Core")
+		end
+		moduleInfo = nil
+	else
+		SSCore.log("Module " .. moduleName .. " does not have a config. This may cause issues if the API version is outdated.", 3, "Server Core") 
+	end
+end
+
+-- Chat printing
+function SSCore.printChat(text, CN, chatPrefix, isTeam, isMe)
+	print("[" .. os.date("%X") .. "] [" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"")
+	SSCore.log("[" .. getip(CN) .. "] " .. (isTeam and "[TEAM] " or blank) .. (isMe and "[ME] " or blank) .. getname(CN) .. " (" .. CN .. ") says: \"" .. text .. "\"", 22, "Server Core")
+	if isTeam then
+		for x=0,maxclient(),1 do
+			if getteam(CN) == getteam(x) and CN ~= x then
+				SSCore.say(SSCore.serverColours.primary .. CN .. "\f3" .. chatPrefix .. SSCore.serverColours.secondary .. "#" .. (isMe and SSCore.serverColours.chatTeam or "\f5") .. getname(CN) .. SSCore.serverColours.chatTeam .. (isMe and space or ": ") .. text, x, (SSCore.chatEcho and -1 or CN))
+			end
+		end
+	else
+		SSCore.say(SSCore.serverColours.primary .. CN .. "\f3" .. chatPrefix .. SSCore.serverColours.secondary .. "#" .. (isMe and SSCore.serverColours.chatPublic or "\f5") .. getname(CN) .. SSCore.serverColours.chatPublic .. (isMe and space or ": ") .. text, -1, (SSCore.chatEcho and -1 or CN))
+	end
+end
+
+-- Chat decoding and processing.
+-- Chat and commands will probably break if this is changed by a Module, unless the Module author /really/ knows what they're doing.
+-- Module authors: Use the handler extension API to extend this function if desired.
+function onPlayerSayText(CN, text, isTeam, isMe)
+	SSCore.log("Starting processing client chat.", 1, "Server Core")
+	
+	-- Run chat extensions (if present)
+	SSCore.log("Running chat extensions (if present).", 1, "Server Core")
+	for tableName, tableValue in pairs(handlerPlayerSayText) do
+		for handlerFunction in pairs(tableValue) do
+			if handlerPlayerSayText[tableName][handlerFunction](CN, text, isTeam, isMe) == false then
+				return PLUGIN_BLOCK		-- If the handler extension returns false, chat processing will stop here. This allows for high customizability.
+			end
+		end
+	end
+	-- Initialize chatPrefix.
+	SSCore.log("Setting chat prefix to blank.", 0, "Server Core")
+	local chatPrefix = blank
+	
+	-- Make a Server Master prefix if using default admin system.
+	-- $$$ This needs to be changed. It sucks.
+	if isadmin(CN) then
+		SSCore.log("Client is logged in as the server administrator, not using modded system. Setting prefix to @.", 0, "Server Core")
+		local chatPrefix = "@"
+	end
+	
+	-- Use dynamic prefixes if using our external Administration system.
+	-- $$$ This needs to be changed. It sucks.
+	if SSCore.useAdminSystem then
+		local hasPerms, hasLevel = getPerms(CN)
+		SSCore.log("Server is using modded admin system, checking for permissions.", 0, "Server Core")
+		if hasPerms and hasLevel == 2 then
+			SSCore.log("Client has Moderator permissions. Setting prefix to M.", 0, "Server Core")
+			local chatPrefix = "M"
+		end
+		if hasPerms and hasLevel == 3 then
+			SSCore.log("Client has Administrator permissions. Setting prefix to A.", 0, "Server Core")
+			local chatPrefix = "A"
+		end
+		if hasPerms and hasLevel == 4 then
+			SSCore.log("Client has Master permissions. Setting prefix to @.", 0, "Server Core")
+			local chatPrefix = "@"
+		end
+	end
+
+	-- Test for profanity if using a filter system.
+	-- $$$ Look into seeing if a Module can do this with the chat handler extension API. This function is probably useless.
+	if SSCore.useChatFilter then
+		SSCore.log("Server is using modded profanity filter, checking for bloked words.", 0, "Server Core")
+		if not chatIsClean(text) then
+			SSCore.log("Chat contains a blocked word, stopping chat processing.", 0, "Server Core")
+			blockChatReason = "Chat contains profanity."
+			SSCore.log("Sending chat to filter system to take over chat processing.", 0, "Server Core")
+			blockChat(CN, text, isTeam, isMe, blockChatReason)
+			return PLUGIN_BLOCK
+		end
+	end
+	
+	-- Convert colour codes if enabled on our server.
+	if SSCore.colouredChat then
+		SSCore.log("Server has coloured text enabled, reprocessing and converting colour codes.", 0, "Server Core")
+		local text = string.gsub(text, "\\f", "\f")
+	end
+	
+	-- Split the text into a table.
+	SSCore.log("Converting the sent chat into a table for command processing.", 0, "Server Core")
+	local array = split(text, " ")
+	-- Separate the command from the arguments.
+	SSCore.log("Separating the command (first table entry) from the arguments.", 0, "Server Core")
+	local command, args = array[1], slice(array, 2)
+	-- Check if the text is a command, execute if it is.
+	if commands[command] ~= nil then
+		SSCore.log("Chat is a command, processing from command list.", 1, "Server Core")
+		SSCore.log("[" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called: \"" .. text .. "\"", 22, "Server Core")
+		print("[" .. os.date("%X") .. "] [" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called: \"" .. text .. "\"")
+		local callback = commands[command][1]
+		callback(CN, args)
+		return PLUGIN_BLOCK
+	elseif string.byte(command,1) == string.byte("!",1) then
+		SSCore.log("Chat is not a command but in command notation. Stopping chat processing.", 1, "Server Core")
+		SSCore.log("[" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called non-command: \"" .. text .. "\"", 22, "Server Core")
+		print("[" .. os.date("%X") .. "] [" .. getip(CN) .. "] " .. getname(CN) .. " (" .. CN .. ") called non-command: \"" .. text .. "\"")
+		SSCore.say("\f3(?) Not a command: " .. command, CN)
+		return PLUGIN_BLOCK		
+	end
+	
+	-- Chat function
+	SSCore.log("Initial chat processing complete, sending to printChat to determine teams and /me.", 1, "Server Core")
+	SSCore.printChat(text, CN, chatPrefix, isTeam, isMe)
+	return PLUGIN_BLOCK
 end
 
 -- Core Commands
