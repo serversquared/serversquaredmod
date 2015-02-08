@@ -668,7 +668,7 @@ commands = {
 			end
 			SSCore.log("Calling runModule to load the Module.", 0, "Server Core")
 			if SSCore.runModule(args[1], unloadModule, true) then
-				SSCore.say("Module was " .. (unloadModule and "un" or blank) .. "loaded successfully.", CN)
+				SSCore.say("Module was " .. (unloadModule and "un" or blank) .. "loaded successfully.", CN)		-- $$$ I don't think this works because runModule() deletes unloadModule.
 			else
 				SSCore.say("Module failed to load.", CN)
 			end
