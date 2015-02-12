@@ -28,7 +28,6 @@ SSCore.beta = true						-- True if this build is a beta build.
 SSCore.buildDate = "29 January 2015"	-- Build date of this release. Not changed for dev builds.
 SSCore.copyright = "2015"				-- Year of Copyright registration.
 SSCore.url = "serversquared.org"		-- URL of the (server)^2 website.
-SSCore.http = "http://serversquared.org"-- HTTP URL of the (server)^2 website.
 SSCore.enableLog = true					-- Turn on or off mod logging.
 SSCore.debugMode = false				-- Turn on or off debug (verbose) mode. This WILL write to the log.
 SSCore.logInfo = true					-- Turn on or off logging "INFO" level messages.
@@ -188,9 +187,9 @@ end
 function SSCore.getFromServer(file)
 	SSCore.log("Setting socket mode.", 0, "Server Core")
 	SSCore.log("Setting host.", 0, "Server Core")
-	local host = SSCore.http .. (file or blank)
+	local host = "http://" .. SSCore.url .. (file or blank)
 	SSCore.log("Testing connection.", 0, "Server Core")
-	local data, reply, head = http.request(SSCore.http .. "/test.html")
+	local data, reply, head = http.request("http://" .. SSCore.url .. "/test.html")
 	if reply == 200 and data == blank then
 		SSCore.log("Sending request: GET " .. (file or blank), 0, "Server Core")
 		local data, reply, head = http.request(host)
