@@ -322,7 +322,7 @@ function SSCore.configServer()
 	io.write(colors("%{reset bright black}    | |    __\\ \\ | |___  | |        \\ \\/ /  | |___  | |        | |%{reset}\n"))
 	io.write(colors("%{reset bright black}     \\_\\   \\___/  \\___/  |_|         \\__/    \\___/  |_|       /_/%{reset}\n"))
 	io.write(colors("\n%{reset bright cyan}Welcome to (server)^2 Modification %{reset bright blue}version " .. SSCore.versionCore .. "%{reset bright cyan}!%{reset}\n"))
-	if SSCore.alpha or SSCore.beta then io.write(colors("%{reset red}********************\n%{reset reverse red}/!\\ WARNING /!\\\n%{reset red}THIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************%{reset}\n")) end
+	if SSCore.alpha or SSCore.beta then io.write(colors("%{reset red}********************\n%{reset redbg dim black}/!\\ WARNING /!\\%{reset}\n%{reset red}THIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!%{reset}\n%{reset red}USE AT YOUR OWN RISK!%{reset}\n%{reset red}********************%{reset}\n")) end
 	io.write(colors("%{reset dim white}Please report any bugs to the issue tracker at:%{reset}\n"))
 	io.write(colors("%{reset blue underline}https://github.com/account3r2/serversquaredmod/issues%{reset}\n"))
 	io.write(colors("%{reset bright yellow}By using all or any portion of the software, you are agreeing to be bound%{reset}\n"))
