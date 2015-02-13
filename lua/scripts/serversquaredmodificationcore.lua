@@ -277,20 +277,55 @@ function SSCore.verify()
 	end
 end
 
+function SSCore.booleanConvert(stringOrBoolean)
+	if type(stringOrBoolean) == "string" then
+		if stringOrBoolean == "false" then
+			return false
+		elseif stringOrBoolean == "true" then
+			return true
+		end
+	elseif type(stringOrBoolean) == "boolean" then
+		if not stringOrBoolean then
+			return "false"
+		elseif stringOrBoolean then
+			return "true"
+		end
+	else
+		return
+	end
+end
+
+function SSCore.loadConfig()
+	if not cfg.exists("serversquared.serverconfig") then
+		cfg.createfile("serversquared.serverconfig")
+		cfg.setvalue("serversquared.serverconfig", "serverName", blank)
+		cfg.setvalue("serversquared.serverconfig", "serverMOTD", blank)
+		cfg.setvalue("serversquared.serverconfig", "serverWebsite", blank)
+		cfg.setvalue("serversquared.serverconfig", "chatEcho", SSCore.booleanConvert(false))			-- Global echo back coloured chat.
+		cfg.setvalue("serversquared.serverconfig", "colouredChat", SSCore.booleanConvert(true))			-- Allow or disallow coloured chat.
+		cfg.setvalue("serversquared.serverconfig", "useAdminSystem", SSCore.booleanConvert(false))		-- Use an external Administration system.
+		cfg.setvalue("serversquared.serverconfig", "useChatFilter", SSCore.booleanConvert(false))		-- Use an external chat filter system.
+		cfg.setvalue("serversquared.serverconfig", "serverColours.primary", "\f4")						-- Primary colour.
+		cfg.setvalue("serversquared.serverconfig", "serverColours.secondary", "\f3")					-- Secondary colour.
+		cfg.setvalue("serversquared.serverconfig", "serverColours.chatPublic", "\f0")					-- Public chat colour.
+		cfg.setvalue("serversquared.serverconfig", "serverColours.chatTeam", "\f1")						-- Team chat colour.
+	end
+	SSCore.chatEcho = SSCore.booleanConvert(cfg.getvalue("serversquared.serverconfig", "chatEcho"))
+	SSCore.colouredChat = SSCore.booleanConvert(cfg.getvalue("serversquared.serverconfig", "colouredChat"))
+	SSCore.useAdminSystem = SSCore.booleanConvert(cfg.getvalue("serversquared.serverconfig", "useAdminSystem"))
+	SSCore.useChatFilter = SSCore.booleanConvert(cfg.getvalue("serversquared.serverconfig", "useChatFilter"))
+	SSCore.serverColours.primary = cfg.getvalue("serversquared.serverconfig", "serverColours.primary")
+	SSCore.serverColours.secondary = cfg.getvalue("serversquared.serverconfig", "serverColours.secondary")
+	SSCore.serverColours.chatPublic = cfg.getvalue("serversquared.serverconfig", "serverColours.chatPublic")
+	SSCore.serverColours.chatTeam = cfg.getvalue("serversquared.serverconfig", "serverColours.chatTeam")
+end
+
 function SSCore.init()
 	SSCore.log("Initializing the Modification.", 2, "Server Core")
 	-- Load our variables.
 	SSCore.log("Loading Global configuration variables.", 1, "Server Core")
-	SSCore.chatEcho = false					-- Global echo back coloured chat.
-	SSCore.colouredChat = true				-- Allow or disallow coloured chat.
-	SSCore.useAdminSystem = false			-- Use an external Administration system.
-	SSCore.useChatFilter = false			-- Use an external chat filter system.
-	SSCore.log("Loading server colour configuration.", 1, "Server Core")
 	SSCore.serverColours = {}				-- Table of colours for the server.
-	SSCore.serverColours.primary = "\f4"	-- Primary colour.
-	SSCore.serverColours.secondary = "\f3"	-- Secondary colour.
-	SSCore.serverColours.chatPublic = "\f0"	-- Public chat colour.
-	SSCore.serverColours.chatTeam = "\f1"	-- Team chat colour.
+	SSCore.loadConfig()
 
 	-- Initialize handlerPlayerSayText
 	handlerPlayerSayText = {}
