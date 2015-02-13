@@ -310,6 +310,7 @@ function SSCore.loadConfig()
 		cfg.setvalue("serversquared.serverconfig", "serverColours.chatPublic", "\f0")					-- Public chat colour.
 		cfg.setvalue("serversquared.serverconfig", "serverColours.chatTeam", "\f1")						-- Team chat colour.
 	end
+
 	SSCore.chatEcho = SSCore.booleanConvert(cfg.getvalue("serversquared.serverconfig", "chatEcho"))
 	SSCore.colouredChat = SSCore.booleanConvert(cfg.getvalue("serversquared.serverconfig", "colouredChat"))
 	SSCore.useAdminSystem = SSCore.booleanConvert(cfg.getvalue("serversquared.serverconfig", "useAdminSystem"))
@@ -356,6 +357,7 @@ function SSCore.configServer()
 	io.write(colors("%{reset bright black}    | |   \\__ \\  |  __/  | |       | |  | | |  __/  | |        | |%{reset}\n"))
 	io.write(colors("%{reset bright black}    | |    __\\ \\ | |___  | |        \\ \\/ /  | |___  | |        | |%{reset}\n"))
 	io.write(colors("%{reset bright black}     \\_\\   \\___/  \\___/  |_|         \\__/    \\___/  |_|       /_/%{reset}\n"))
+	io.write(colors("%{reset black}    Copyright (C) " .. SSCore.copyright .. " Niko Geil. All rights reserved.%{reset}\n"))
 	io.write(colors("\n%{reset bright cyan}Welcome to (server)^2 Modification %{reset bright blue}version " .. SSCore.versionCore .. "%{reset bright cyan}!%{reset}\n"))
 	if SSCore.alpha or SSCore.beta then io.write(colors("%{reset red}********************\n%{reset redbg dim black}/!\\ WARNING /!\\%{reset}\n%{reset red}THIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!%{reset}\n%{reset red}USE AT YOUR OWN RISK!%{reset}\n%{reset red}********************%{reset}\n")) end
 	io.write(colors("%{reset dim white}Please report any bugs to the issue tracker at:%{reset}\n"))
