@@ -157,6 +157,16 @@ if not pcall(reqsha1) then
 end
 reqsha1 = nil
 
+-- Load ansicolors
+function reqansicolors()
+	colors = require("ansicolors")
+end
+if not pcall(reqansicolors) then
+	SSCore.log("Dependency not found: ansicolors", 20, "Server Core")
+	os.exit()
+end
+reqansicolors = nil
+
 -- $$$ Yup, that sucked.
 
 -- Send data to (server)^2.
@@ -305,15 +315,21 @@ end
 function SSCore.configServer()
 	-- Present a friendly message for the server configuration interface.
 	SSCore.log("Writing configuration interface.", 1, "Server Core")
-	io.write("\nWelcome to (server)^2 Modification version " .. SSCore.versionCore .. "!\n")
-	if SSCore.alpha or SSCore.beta then io.write("********************\n/!\\ WARNING /!\\\nTHIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************\n") end
-	io.write("Please report any bugs to the issue tracker at:\n")
-	io.write("https://github.com/account3r2/serversquaredmod/issues\n")
-	io.write("By using all or any portion of the software, you are agreeing to be bound\n")
-	io.write("by all the terms and conditions of the license agreement.\n")
-	io.write("See the license file for more information.\n")
-	io.write("Let's configure your server.\n")
-	io.write("============================================================\n")
+	io.write(colors("\n%{reset bright black}       _  ____    ____    _  ___    _    _   ____    _  ___    _   2%{reset}\n"))
+	io.write(colors("%{reset bright black}     / / / __/   /  _ \\  | |/ _ \\  | |  | | /  _ \\  | |/ _ \\  \\ \\%{reset}\n"))
+	io.write(colors("%{reset bright black}    | |  \\ \\__   | |_| | |  _/ \\_\\ | |  | | | |_| | |  _/ \\_\\  | |%{reset}\n"))
+	io.write(colors("%{reset bright black}    | |   \\__ \\  |  __/  | |       | |  | | |  __/  | |        | |%{reset}\n"))
+	io.write(colors("%{reset bright black}    | |    __\\ \\ | |___  | |        \\ \\/ /  | |___  | |        | |%{reset}\n"))
+	io.write(colors("%{reset bright black}     \\_\\   \\___/  \\___/  |_|         \\__/    \\___/  |_|       /_/%{reset}\n"))
+	io.write(colors("\n%{reset bright cyan}Welcome to (server)^2 Modification %{reset bright blue}version " .. SSCore.versionCore .. "%{reset bright cyan}!%{reset}\n"))
+	if SSCore.alpha or SSCore.beta then io.write(colors("%{reset red}********************\n%{reset reverse red}/!\\ WARNING /!\\\n%{reset red}THIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!\nUSE AT YOUR OWN RISK!\n********************%{reset}\n")) end
+	io.write(colors("%{reset dim white}Please report any bugs to the issue tracker at:%{reset}\n"))
+	io.write(colors("%{reset blue underline}https://github.com/account3r2/serversquaredmod/issues%{reset}\n"))
+	io.write(colors("%{reset bright yellow}By using all or any portion of the software, you are agreeing to be bound%{reset}\n"))
+	io.write(colors("%{reset bright yellow}by all the terms and conditions of the license agreement.%{reset}\n"))
+	io.write(colors("%{reset bright yellow}See the license file for more information.%{reset}\n"))
+	io.write(colors("%{reset bright blue}Let's configure your server.%{reset}\n"))
+	io.write(colors("%{reset blue}============================================================%{reset}\n"))
 	-- Get current working directory
 	SSCore.log("Getting Current Working Directory.", 1, "Server Core")
 	SSCore.ACPath = os.currentdir()
