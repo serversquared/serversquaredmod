@@ -31,6 +31,7 @@ SSCore.url = "serversquared.org"		-- URL of the (server)^2 website.
 SSCore.enableLog = true					-- Turn on or off mod logging.
 SSCore.debugMode = false				-- Turn on or off debug (verbose) mode. This WILL write to the log.
 SSCore.logInfo = true					-- Turn on or off logging "INFO" level messages.
+SSCore.loadStart = os.clock()			-- CPU time start reference point.
 
 -- Function to write the log.
 function SSCore.log(message, level, sender)
@@ -539,7 +540,7 @@ end
 -- I'm really proud of this one <3
 function SSCore.runModule(moduleName, unloadModule, booleanMode)
 	SSCore.log("Starting runModule function.", 1, "Server Core")
-	local loadStartTick = getsvtick()
+	local moduleLoadStart = os.clock()
 	if unloadModule == nil or moduleName == nil then
 		SSCore.log("runModule was called using incorrect syntax, stopping.", 3, "Server Core")
 	end
@@ -566,8 +567,8 @@ function SSCore.runModule(moduleName, unloadModule, booleanMode)
 		end
 		onModuleLoad = nil
 		onModuleUnload = nil
-		local loadTime = (getsvtick() - loadStartTick)
-		SSCore.log("Successfully loaded Module in " .. loadTime .. "ms.", 2, "Server Core")
+		local loadTime = (os.clock() - moduleLoadStart)
+		SSCore.log("Successfully loaded Module in " .. loadTime .. "s.", 2, "Server Core")
 		if unloadModule then
 			SSCore.loadedModules[moduleName] = nil
 			SSCore.log("Removed module from loadedModules table.", 0, "Server Core")
@@ -750,7 +751,8 @@ function onInit()
 	-- Patch the server if patch file exists.
 	SSCore.patchServer()
 
-	SSCore.log("Done.", 2, "Server Core")
+	local loadStop = os.clock() - SSCore.loadStart
+	SSCore.log("Done. (" .. loadStop .. "s)", 2, "Server Core")
 	SSCore.configServer()
 end
 
