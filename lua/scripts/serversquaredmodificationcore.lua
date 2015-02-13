@@ -543,10 +543,19 @@ function SSCore.runModule(moduleName, unloadModule, booleanMode)
 	local moduleLoadStart = os.clock()
 	if unloadModule == nil or moduleName == nil then
 		SSCore.log("runModule was called using incorrect syntax, stopping.", 3, "Server Core")
+		return
 	end
 	SSCore.log("Loading Module" .. (unloadModule and " in unload mode" or blank) .. ": " .. moduleName, 2, "Server Core")
 	if pcall(dofile, "lua/scripts/SSModules/" .. moduleName .. ".ssm") then
 		if unloadModule then
+			if not SSCore.loadedModules[moduleName] then
+				SSCore.log("Module was not loaded, stopping.", 3, "Server Core")
+				if booleanMode ~= nil and booleanMode then
+					return false
+				else
+					return
+				end
+			end
 			if onModuleUnload ~= nil then
 				onModuleUnload()
 			end
@@ -556,6 +565,14 @@ function SSCore.runModule(moduleName, unloadModule, booleanMode)
 				end
 			end
 		elseif not unloadModule then
+			if SSCore.loadedModules[moduleName] then
+				SSCore.log("Module was already loaded, stopping.", 3, "Server Core")
+				if booleanMode ~= nil and booleanMode then
+					return false
+				else
+					return
+				end
+			end
 			if addCommands ~= nil then
 				for commandName,commandFunction in pairs(addCommands) do
 					commands[commandName] = commandFunction
@@ -721,10 +738,11 @@ commands = {
 			end
 			SSCore.log("Calling runModule to load the Module.", 0, "Server Core")
 			if SSCore.runModule(args[1], unloadModule, true) then
-				SSCore.say("Module was " .. (unloadModule and "un" or blank) .. "loaded successfully.", CN)		-- $$$ I don't think this works because runModule() deletes unloadModule.
+				SSCore.say("Module was " .. (unloadModule and "un" or blank) .. "loaded successfully.", CN)
 			else
 				SSCore.say("Module failed to load.", CN)
 			end
+			unloadModule = nil
 		end
 	},
 
