@@ -295,9 +295,9 @@ function SSCore.booleanConvert(stringOrBoolean)
 	end
 end
 
-function SSCore.loadConfig()
-	if not cfg.exists("serversquared.serverconfig") then
-		cfg.createfile("serversquared.serverconfig")
+function SSCore.loadConfig(generate)
+	if generate or not cfg.exists("serversquared.serverconfig") then
+		if not cfg.exists("serversquared.serverconfig") then cfg.createfile("serversquared.serverconfig") end
 		cfg.setvalue("serversquared.serverconfig", "serverName", blank)
 		cfg.setvalue("serversquared.serverconfig", "serverMOTD", blank)
 		cfg.setvalue("serversquared.serverconfig", "serverWebsite", blank)
@@ -764,6 +764,6 @@ function onDestroy()
 		SSCore.runModule(moduleName, true)
 	end
 
-	io.write("Thank you for using (server)^2 Modification.\n")
+	io.write(colors("\n%{reset bright cyan}Thank you for using (server)^2 Modification.%{reset}\n"))
 end
 -- I love you, Caitlyn (:
