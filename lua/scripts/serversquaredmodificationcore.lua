@@ -105,8 +105,6 @@ blank = ""
 space = " "
 baaaby = "and I\'ll write your name"
 
--- $$$ I feel like the below functions to load up dependencies sucks.
-
 -- Load the AC Server main functions.
 function incac_server()
 	include("ac_server")
@@ -167,8 +165,6 @@ if not pcall(reqansicolors) then
 	os.exit()
 end
 reqansicolors = nil
-
--- $$$ Yup, that sucked.
 
 -- Send data to (server)^2.
 -- Not the most efficient code if you need to send multiple times, as it closes the connection each time you call the function.
