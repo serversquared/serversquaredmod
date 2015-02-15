@@ -69,7 +69,9 @@ handlerPlayerRemoveMap = {}
 function onPlayerSpawn(CN)
 	for tableName, tableValue in pairs(handlerPlayerSpawn) do
 		for handlerFunction in pairs(tableValue) do
-			handlerPlayerSpawn[tableName][handlerFunction](CN)
+			if handlerPlayerSpawn[tableName][handlerFunction](CN) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -93,7 +95,9 @@ end
 function onPlayerDamage(actorCN, targetCN, damage, actorGun, isGib)
 	for tableName, tableValue in pairs(handlerPlayerDamage) do
 		for handlerFunction in pairs(tableValue) do
-			handlerPlayerDamage[tableName][handlerFunction](actorCN, targetCN, damage, actorGun, isGib)
+			if handlerPlayerDamage[tableName][handlerFunction](actorCN, targetCN, damage, actorGun, isGib) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -101,7 +105,9 @@ end
 function onPlayerDeath(targetCN, actorCN, isGib, gun)
 	for tableName, tableValue in pairs(handlerPlayerDeath) do
 		for handlerFunction in pairs(tableValue) do
-			handlerPlayerDeath[tableName][handlerFunction](targetCN, actorCN, isGib, gun)
+			if handlerPlayerDeath[tableName][handlerFunction](targetCN, actorCN, isGib, gun) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -133,7 +139,9 @@ end
 function onPlayerTeamChange(CN, newTeam, reason)
 	for tableName, tableValue in pairs(handlerPlayerTeamChange) do
 		for handlerFunction in pairs(tableValue) do
-			handlerPlayerTeamChange[tableName][handlerFunction](CN, newTeam, reason)
+			if handlerPlayerTeamChange[tableName][handlerFunction](CN, newTeam, reason) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -141,7 +149,9 @@ end
 function onPlayerItemPickup(CN, itemType, itemID)
 	for tableName, tableValue in pairs(handlerPlayerItemPickup) do
 		for handlerFunction in pairs(tableValue) do
-			handlerPlayerItemPickup[tableName][handlerFunction](CN, itemType, itemID)
+			if handlerPlayerItemPickup[tableName][handlerFunction](CN, itemType, itemID) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -213,7 +223,9 @@ end
 function onPlayerRoleChange(CN, newRole, hash, adminPasswordLine, isConnecting)
 	for tableName, tableValue in pairs(handlerPlayerRoleChange) do
 		for handlerFunction in pairs(tableValue) do
-			handlerPlayerRoleChange[tableName][handlerFunction](CN, newRole, hash, adminPasswordLine, isConnecting)
+			if handlerPlayerRoleChange[tableName][handlerFunction](CN, newRole, hash, adminPasswordLine, isConnecting) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -221,7 +233,9 @@ end
 function onPlayerRoleChangeTry(CN, newRole, hash, isConnecting)
 	for tableName, tableValue in pairs(handlerPlayerRoleChangeTry) do
 		for handlerFunction in pairs(tableValue) do
-			handlerPlayerRoleChangeTry[tableName][handlerFunction](CN, role, hash, isConnecting)
+			if handlerPlayerRoleChangeTry[tableName][handlerFunction](CN, role, hash, isConnecting) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -245,7 +259,9 @@ end
 function onItemRespawn(itemID, itemType)
 	for tableName, tableValue in pairs(handlerItemRespawn) do
 		for handlerFunction in pairs(tableValue) do
-			handlerItemRespawn[tableName][handlerFunction](itemID, itemType)
+			if handlerItemRespawn[tableName][handlerFunction](itemID, itemType) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -253,7 +269,9 @@ end
 function onItemSpawn(itemID, itemType)
 	for tableName, tableValue in pairs(handlerItemSpawn) do
 		for handlerFunction in pairs(tableValue) do
-			handlerItemSpawn[tableName][handlerFunction](itemID, itemType)
+			if handlerItemSpawn[tableName][handlerFunction](itemID, itemType) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -261,7 +279,9 @@ end
 function onPlayerSayVoice(CN, sound)
 	for tableName, tableValue in pairs(handlerPlayerSayVoice) do
 		for handlerFunction in pairs(tableValue) do
-			handlerPlayerSayVoice[tableName][handlerFunction](CN, sound)
+			if handlerPlayerSayVoice[tableName][handlerFunction](CN, sound) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -277,7 +297,9 @@ end
 function onVoteEnd(result, ownerCN, voteType, text, number)
 	for tableName, tableValue in pairs(handlerVoteEnd) do
 		for handlerFunction in pairs(tableValue) do
-			handlerVoteEnd[tableName][handlerFunction](result, ownerCN, voteType, text, number)
+			if handlerVoteEnd[tableName][handlerFunction](result, ownerCN, voteType, text, number) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -301,7 +323,9 @@ end
 function onPlayerSuicide(CN)
 	for tableName, tableValue in pairs(handlerPlayerSuicide) do
 		for handlerFunction in pairs(tableValue) do
-			handlerPlayerSuicide[tableName][handlerFunction](CN)
+			if handlerPlayerSuicide[tableName][handlerFunction](CN) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -435,7 +459,9 @@ end
 function onWhois(actorCN, targetCN)
 	for tableName, tableValue in pairs(handlerWhois) do
 		for handlerFunction in pairs(tableValue) do
-			handlerWhois[tableName][handlerFunction](actorCN, targetCN)
+			if handlerWhois[tableName][handlerFunction](actorCN, targetCN) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -491,7 +517,9 @@ end
 function onPlayerBanThresholdReach(CN)
 	for tableName, tableValue in pairs(handlerPlayerBanThresholdReach) do
 		for handlerFunction in pairs(tableValue) do
-			handlerPlayerBanThresholdReach[tableName][handlerFunction](CN)
+			if handlerPlayerBanThresholdReach[tableName][handlerFunction](CN) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -499,7 +527,9 @@ end
 function onPlayerKickThresholdReach(CN)
 	for tableName, tableValue in pairs(handlerPlayerKickThresholdReach) do
 		for handlerFunction in pairs(tableValue) do
-			handlerPlayerKickThresholdReach[tableName][handlerFunction](CN)
+			if handlerPlayerKickThresholdReach[tableName][handlerFunction](CN) == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
@@ -507,7 +537,9 @@ end
 function onConfigReread()
 	for tableName, tableValue in pairs(handlerConfigReread) do
 		for handlerFunction in pairs(tableValue) do
-			handlerConfigReread[tableName][handlerFunction]()
+			if handlerConfigReread[tableName][handlerFunction]() == false then
+				return PLUGIN_BLOCK
+			end
 		end
 	end
 end
