@@ -3,15 +3,16 @@ This software is an AssaultCube modification written in Lua by Niko Geil, utiliz
 Please read the software license agreement carefully. By using all or any portion of the software, you are agreeing to be bound by all the terms and conditions of the agreement. If you do not agree to any terms of the agreement, do not use the software.  
   
 Install instructions:  
-* Install a fresh copy of Sveark's Lua API for AssaultCube.  
-* Delete the lua folder.  
-* Delete libmysqlclient.so.16  
-* Replace the deleted lua folder with the lua folder in this repository.  
+* Install a fresh copy of AssaultCube.  
+* Get the required binaries and libraries for your system from [account3r2/ssmbinsandlibs](https://github.com/account3r2/ssmbinsandlibs).  
+* Follow the instructions to install the binaries and libraries.  
+* Merge the lua folder with the lua folder in this repository.  
 * Ensure you have UDP port 53472 open to OUTGOING connections.  
 * Ensure you have the two UDP ports open required for your server.  
 * Run the server wizard (Or, use your own pre-configured script).  
   
-Please note that the included libraries are strictly Linux x86-64.  
+To run (server)^2 Modification core, you must have the proper binaries and libraries.  
+Either download and install a compiled release, or get the binaries and libraries required from [account3r2/ssmbinsandlibs](https://github.com/account3r2/ssmbinsandlibs).  
 The Modification may fail to load if you do not have a working Internet connection.  
   
 This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/.  
