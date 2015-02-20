@@ -11,7 +11,7 @@ Install instructions:
 * Ensure you have the two UDP ports open required for your server.  
 * Run the server wizard (Or, use your own pre-configured script).  
   
-Please note that the included LuaSocket libraries are strictly x86-64.  
+Please note that the included libraries are strictly Linux x86-64.  
 The Modification may fail to load if you do not have a working Internet connection.  
   
 This work is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/4.0/.  
