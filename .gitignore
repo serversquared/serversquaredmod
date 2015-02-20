@@ -9,3 +9,4 @@ SSModules/
 
 # Binaries and libraries
 liblua.so
+extra/
