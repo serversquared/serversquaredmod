@@ -156,6 +156,16 @@ if not pcall(reqsha1) then
 end
 reqsha1 = nil
 
+-- Load JSON4Lua
+function reqjson()
+	json = require("json")
+end
+if not pcall(reqjson) then
+	SSCore.log("Dependency not found: json", 20, "Server Core")
+	os.exit()
+end
+reqjson = nil
+
 -- Load ansicolors
 function reqansicolors()
 	colors = require("ansicolors")
@@ -231,26 +241,23 @@ end
 function SSCore.verify()
 	local completed, hash_or_error = SSCore.checkHash()
 	if completed then
-		SSCore.log("Trying to connect to (server)^2...", 2, "Server Core")
-		local received, msg = SSCore.sendToServer("ping", true)
-		if received and msg == "pong" then
-			SSCore.log("Connection established.", 2, "Server Core")
-			local received, msg = SSCore.sendToServer("verify", true)
-			if received and msg == "sendChecksum" then
-				local received, msg = SSCore.sendToServer(hash_or_error, true)
-				if received and msg == SSCore.version.core then
-					SSCore.log("SHA-1 Checksum is Valid.", 2, "Server Core")
-				else
-					SSCore.log("Could not verify Core: " .. msg, 4, "Server Core")
-					SSCore.log("DO NOT SUBMIT BUG REPORTS OR REPORT CRASHES!", 4, "Server Core")
-					SSCore.log("YOU CANNOT RECEIVE SUPPORT FOR THIS COPY OF (server)^2 Modification!", 4, "Server Core")
-					SSCore.log("DO NOT DISTRIBUTE THIS COPY OR LEGAL ACTION WILL BE TAKEN!", 4, "Server Core")
-					socket.sleep(5)
-				end
-			else
-				SCore.log("Could not verify Core: " .. msg, 4, "Server Core")
-			end
-		else
+		local remoteVerify = {
+			cmd = "verify",
+			hash = hash_or_error,
+			version = SSCore.version.core
+		}
+		local encodedMessage = json.encode(remoteVerify)
+		SSCore.log("Verifying Core with (server)^2...", 2, "Server Core")
+		local received, msg = SSCore.sendToServer(encodedMessage, true)
+		if received and msg == "OK" then
+			SSCore.log("SHA-1 Checksum is Valid.", 2, "Server Core")
+		elseif received then
+			SSCore.log("Could not verify Core: " .. msg, 4, "Server Core")
+			SSCore.log("DO NOT SUBMIT BUG REPORTS OR REPORT CRASHES!", 4, "Server Core")
+			SSCore.log("YOU CANNOT RECEIVE SUPPORT FOR THIS COPY OF (server)^2 Modification!", 4, "Server Core")
+			SSCore.log("DO NOT DISTRIBUTE THIS COPY OR LEGAL ACTION WILL BE TAKEN!", 4, "Server Core")
+			socket.sleep(5)
+		elseif not received then
 			SSCore.log("Connection failed: " .. msg, 4, "Server Core")
 			SSCore.log("If your copy of (server)^2 Modification is modded, you may not", 4, "Server Core")
 			SSCore.log("submit bug reports or crashes. DO NOT DISTRIBUTE, OR LEGAL", 4, "Server Core")
