@@ -324,6 +324,19 @@ function SSCore.init()
 	SSCore.serverColours = {}				-- Table of colours for the server.
 	SSCore.loadConfig()
 
+	-- Get current working directory
+	SSCore.log("Getting Current Working Directory.", 1, "Server Core")
+	SSCore.ACPath = os.currentdir()
+	SSCore.log("We are here: " .. SSCore.ACPath, 0, "Server Core")
+
+	-- Determine if we're running on a Unix-like system
+	if package.config:sub(1,1) == "/" then
+		unix = true
+	else
+		unix = false
+	end
+	SSCore.log("We are " .. (unix and "not " or blank) .. "on a Windows NT-based system.", 0, "Server Core")
+
 	-- Initialize handlerPlayerSayText
 	handlerPlayerSayText = {}
 
@@ -363,17 +376,6 @@ function SSCore.configServer()
 	io.write(colors("%{reset bright yellow}See the license file for more information.%{reset}\n"))
 	io.write(colors("%{reset bright blue}Let's configure your server.%{reset}\n"))
 	io.write(colors("%{reset blue}============================================================%{reset}\n"))
-	-- Get current working directory
-	SSCore.log("Getting Current Working Directory.", 1, "Server Core")
-	SSCore.ACPath = os.currentdir()
-	SSCore.log("We are here: " .. SSCore.ACPath, 0, "Server Core")
-	-- Determine if we're running on a Unix-like system
-	if package.config:sub(1,1) == "/" then
-		unix = true
-	else
-		unix = false
-	end
-	SSCore.log("We are " .. (unix and "not " or blank) .. "on a Windows NT-based system.", 0, "Server Core")
 
 	-- Automatically start the server if autostart file is present.
 	if SSCore.autoLoadServer() then return end
