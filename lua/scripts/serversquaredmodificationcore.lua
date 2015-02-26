@@ -19,12 +19,12 @@ PLUGIN_VERSION = "9.0.0" -- In development!
 
 -- Main table for the Core.
 SSCore = {}
-SSCore.baseversionCore = "9"			-- Base version of the Core.
-SSCore.baseversionAPI = "1"				-- Base version of the Core API. Modules should probably work if they were written for this base version.
-SSCore.versionCore = "9.0.0"			-- Version of the Core.
-SSCore.versionAPI = "1.0"				-- Version of the Core API.
-SSCore.alpha = false					-- True if this build is an alpha build.
-SSCore.beta = true						-- True if this build is a beta build.
+SSCore.version = {}						-- Table for version information.
+SSCore.version.core = "9.0.0"			-- Version of the Core.
+SSCore.version.API = "1.0.0"			-- Version of the API.
+SSCore.version.alpha = false			-- If this is an alpha build or not.
+SSCore.version.beta = true				-- If this is a beta build or not.
+SSCore.version.developmentBuild = true	-- If this is a development build or not.
 SSCore.buildDate = "29 January 2015"	-- Build date of this release. Not changed for dev builds.
 SSCore.copyright = "2015"				-- Year of Copyright registration.
 SSCore.url = "serversquared.org"		-- URL of the (server)^2 website.
@@ -238,7 +238,7 @@ function SSCore.verify()
 			local received, msg = SSCore.sendToServer("verify", true)
 			if received and msg == "sendChecksum" then
 				local received, msg = SSCore.sendToServer(hash_or_error, true)
-				if received and msg == SSCore.versionCore then
+				if received and msg == SSCore.version.core then
 					SSCore.log("SHA-1 Checksum is Valid.", 2, "Server Core")
 				else
 					SSCore.log("Could not verify Core: " .. msg, 4, "Server Core")
@@ -347,7 +347,7 @@ function SSCore.configServer()
 	io.write(colors("%{reset bright black}    | |    __\\ \\ | |___  | |        \\ \\/ /  | |___  | |        | |%{reset}\n"))
 	io.write(colors("%{reset bright black}     \\_\\   \\___/  \\___/  |_|         \\__/    \\___/  |_|       /_/%{reset}\n"))
 	io.write(colors("%{reset black}    Copyright (C) " .. SSCore.copyright .. " Niko Geil. All rights reserved.%{reset}\n"))
-	io.write(colors("\n%{reset bright cyan}Welcome to (server)^2 Modification %{reset bright blue}version " .. SSCore.versionCore .. "%{reset bright cyan}!%{reset}\n"))
+	io.write(colors("\n%{reset bright cyan}Welcome to (server)^2 Modification %{reset bright blue}version " .. SSCore.version.core .. "%{reset bright cyan}!%{reset}\n"))
 	if SSCore.alpha or SSCore.beta then io.write(colors("%{reset red}********************\n%{reset redbg dim black}/!\\ WARNING /!\\%{reset}\n%{reset red}THIS BUILD IS INCOMPLETE AND MAY CAUSE STABILITY ISSUES!%{reset}\n%{reset red}USE AT YOUR OWN RISK!%{reset}\n%{reset red}********************%{reset}\n")) end
 	io.write(colors("%{reset dim white}Please report any bugs to the issue tracker at:%{reset}\n"))
 	io.write(colors("%{reset blue underline}https://github.com/account3r2/serversquaredmod/issues%{reset}\n"))
@@ -596,7 +596,7 @@ end
 -- Check if a Module is built for our API base version.
 function SSCore.checkModule(moduleName, moduleInfo)
 	if moduleInfo ~= nil then
-		if moduleInfo.usesbaseAPI ~= nil and moduleInfo.usesbaseAPI < SSCore.baseversionAPI then
+		if moduleInfo.usesAPI ~= nil and moduleInfo.usesAPI < SSCore.version.API then
 			SSCore.log("Module " .. moduleName .. " is built for old API version " .. moduleInfo.usesAPI .. ". It may have compatibility issues.", 3, "Server Core")
 		end
 		moduleInfo = nil
@@ -736,7 +736,7 @@ commands = {
 
 	["!info"] = {
 		function (CN, args)
-			SSCore.say(SSCore.serverColours.primary .. "(server)^2 Modification Core " .. SSCore.serverColours.secondary .. "v" .. SSCore.versionCore .. SSCore.serverColours.primary .. " Created by " .. SSCore.serverColours.secondary .. "server", CN)
+			SSCore.say(SSCore.serverColours.primary .. "(server)^2 Modification Core " .. SSCore.serverColours.secondary .. "v" .. SSCore.version.core .. SSCore.serverColours.primary .. " Created by " .. SSCore.serverColours.secondary .. "server", CN)
 			SSCore.say(SSCore.serverColours.primary .. "Copyright (C) " .. SSCore.copyright .. " server. All Rights Reserved.", CN)
 		end
 	},
