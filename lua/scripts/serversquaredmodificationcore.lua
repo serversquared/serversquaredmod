@@ -768,7 +768,7 @@ function onInit()
 
 	local loadStop = os.clock() - SSCore.loadStart
 	SSCore.log("Done. (" .. loadStop .. "s)", 2, "Server Core")
-	SSCore.log("We have " .. 2147483647 - os.time() .. " seconds until the end of time.", 2, "Server Core")
+	if unix then SSCore.log("We have " .. 2147483647 - os.time() .. " seconds until the end of time.", 2, "Server Core") end
 	SSCore.configServer()
 end
 
