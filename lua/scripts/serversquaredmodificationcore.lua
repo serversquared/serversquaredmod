@@ -33,8 +33,19 @@ SSCore.debugMode = false				-- Turn on or off debug (verbose) mode. This WILL wr
 SSCore.logInfo = true					-- Turn on or off logging "INFO" level messages.
 SSCore.loadStart = os.clock()			-- CPU time start reference point.
 
+handlerServerWriteLog = {}
+
 -- Function to write the log.
 function SSCore.log(message, level, sender)
+	-- Run all handler extensions for the log, if present.
+	for tableName, tableValue in pairs(handlerServerWriteLog) do
+		for handlerFunction in pairs(tableValue) do
+			if handlerServerWriteLog[tableName][handlerFunction](message, level, sender) == false then
+				return		-- If the handler extension returns false, log processing will stop here.
+			end
+		end
+	end
+
 	-- Do not continue if logging is off
 	if not SSCore.enableLog then
 		return
