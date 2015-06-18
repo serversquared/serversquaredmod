@@ -17,3 +17,35 @@
   || License along with serversquared Modification.  If not, see             ||
   || <http://www.gnu.org/licenses/>.                                         ||
   \\=========================================================================]]
+
+local socket = require("socket")
+local json = require("json")
+
+local SSMod = {}		-- Main table for serversquared Modification.
+SSMod.version = {}		-- Table for version numbers of Modification.
+SSMod.version.network = "1.0.0"	-- Version of this library.
+SSMod.network = {}		-- Main table for this library.
+
+function SSMod.network.assemblePacket(from, version, data)
+	local packet = {
+		from = from,
+		ver = SSMod.version.network,
+		data = {},
+	}
+
+	for k, v in pairs(data) do
+		packet.data[k] = v
+	end
+
+	return packet
+end
+
+function SSMod.network.send(packet, to)
+	SENDFUNCTIONPLZCHANGE(json.encode(packet), to)
+end
+
+function SSMod.network.receive()
+	local data = {}
+end
+
+return SSMod
