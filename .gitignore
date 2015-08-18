@@ -1,12 +1,2 @@
 # Compiled source
 *.luac
-
-# Old releases
-versions/
-
-# SSModules
-SSModules/
-
-# Binaries and libraries
-liblua.so
-extra/
